@@ -10,8 +10,7 @@ Reading a Markdown or HTML file on an iPhone or iPad should feel like reading it
 
 ## Next
 
-- **Daily reader**: Margin is for its owner first, so the first phase is the reader the owner uses every day; every later phase builds on it. Proposal: [2026-11-27-daily-reader](proposals/2026-11-27-daily-reader.md)
-- **Quick Look preview**: the owner's top priority after the reader itself. Files, Mail, and Messages show Markdown rendered by Margin without opening the app. It reuses the daily reader's renderer, so it comes right after it.
+- **Daily reader**: Margin is for its owner first, so the first phase is the reader the owner uses every day, together with its Quick Look preview, the owner's top priority, which shares the same reader. Every later phase builds on it. Proposal: [2026-11-27-daily-reader](proposals/2026-11-27-daily-reader.md)
 
 ## Later
 

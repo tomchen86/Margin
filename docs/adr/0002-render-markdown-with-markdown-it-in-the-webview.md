@@ -7,7 +7,7 @@
 
 Margin shows every document in one WebView, so Markdown has to become HTML somewhere. The roadmap's goal asks for documents with images, highlighted code, math, and a table of contents.
 
-A local prototype, outside this repo, first converted Markdown with Foundation's `AttributedString(markdown:)`, turning its presentation intents into HTML. That handled CommonMark, tables, and task lists, but math cannot be added on top of it. The parser reads `*`, `_`, and `\` inside `$…$` as Markdown before any math renderer sees the formula: `$a*b*c$` comes out with an emphasized `b`, and `\{` loses its backslash. Math has to be recognized while parsing.
+A prototype, kept on this repo's `prototype` branch, first converted Markdown with Foundation's `AttributedString(markdown:)`, turning its presentation intents into HTML. That handled CommonMark, tables, and task lists, but math cannot be added on top of it. The parser reads `*`, `_`, and `\` inside `$…$` as Markdown before any math renderer sees the formula: `$a*b*c$` comes out with an emphasized `b`, and `\{` loses its backslash. Math has to be recognized while parsing.
 
 Options considered:
 
