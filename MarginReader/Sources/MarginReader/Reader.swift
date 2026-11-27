@@ -22,8 +22,9 @@ public final class Reader {
         page = WebPage(configuration: configuration)
     }
 
-    /// Loads the document into ``page`` and returns once the page shows it.
-    public func load() async throws {
+    /// Loads the document into ``page`` and returns once the page shows it: its text as written
+    /// when `showingSource` is true, otherwise the document itself.
+    public func load(showingSource: Bool = false) async throws {
         for try await event in page.load(URLRequest(url: ReaderScheme.pageURL(for: documentURL)))
         where event == .finished {
             return

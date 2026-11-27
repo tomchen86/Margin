@@ -65,3 +65,33 @@ WHEN the owner chooses Find in the `More` menu, or presses ⌘F on a hardware ke
 
 - **WHEN** the owner presses ⌘F and types `Mango`, which the document holds once
 - **THEN** the find bar shows `1 of 1`
+
+### Requirement: READING-6.1 View Source
+
+WHEN the owner chooses View Source in the `More` menu for a Markdown or HTML document, the reader SHALL show the file's text unrendered, as written, in the system's monospaced font at the owner's text size, with long lines wrapped, starting at the top of the page, and the menu SHALL offer View Rendered, which switches back to the top of the rendered page.
+
+#### Scenario: Markdown
+
+- **WHEN** the owner chooses View Source for a Markdown document holding `# Title` and `**bold**`
+- **THEN** the reader shows `# Title` and `**bold**` as typed, and View Rendered shows the heading and bold text again
+
+#### Scenario: HTML
+
+- **WHEN** the owner chooses View Source for an HTML document whose script would add `Pomelo` to the page
+- **THEN** the reader shows the markup and the script as typed, and `Pomelo` does not appear
+
+#### Scenario: plain text
+
+- **WHEN** the owner opens the `More` menu for a plain-text document
+- **THEN** it offers no View Source
+
+#### Scenario: the top of the page
+
+- **WHEN** the owner has scrolled far down a long document and chooses View Source, then View Rendered
+- **THEN** each shows the top of the page
+
+#### Scenario: Find in the source
+
+- **WHEN** the source of a document holding `**Lychee**` is shown and the owner finds `**`
+- **THEN** the find bar shows `1 of 2`, finding the source's characters
+
