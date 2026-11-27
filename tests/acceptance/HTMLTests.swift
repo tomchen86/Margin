@@ -209,6 +209,41 @@ struct HTMLTests {
         #expect(shown.window.rootViewController?.presentedViewController == nil, "no dialog appears")
     }
 
+    // MARK: Charset
+
+    @Test(
+        "[HTML-6.1] decodes a document in the charset it declares",
+        arguments: [
+            (#"<meta charset="windows-1252">"#, "Café au lait", String.Encoding.windowsCP1252),
+            (
+                #"<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">"#, "Crème brûlée",
+                String.Encoding.isoLatin1
+            ),
+            (#"<meta charset="shift_jis">"#, "古いメモ：今日はいい天気です。", String.Encoding.shiftJIS),
+        ])
+    func decodesTheDeclaredCharset(declaration: String, text: String, encoding: String.Encoding) async throws {
+        let html = "<!doctype html><html><head>\(declaration)</head><body><p>\(text)</p></body></html>"
+        let bytes = try #require(html.data(using: encoding, allowLossyConversion: false))
+        let shown = try await ShownDocument.show(bytes, named: "Declared.html")
+        defer { shown.close() }
+        let paragraph = try await shown.evaluate("return document.querySelector('p')?.textContent ?? null")
+        #expect(paragraph as? String == text)
+    }
+
+    @Test("[HTML-6.1] keeps to a declared utf-8 even when the bytes look like Big5")
+    func keepsToTheDeclaration() async throws {
+        let big5 = String.Encoding(
+            rawValue: CFStringConvertEncodingToNSStringEncoding(CFStringEncoding(CFStringEncodings.big5.rawValue)))
+        let html = #"<!doctype html><html><head><meta charset="utf-8"></head><body><p>天氣很好</p></body></html>"#
+        let bytes = try #require(html.data(using: big5, allowLossyConversion: false))
+        let shown = try await ShownDocument.show(bytes, named: "Mislabeled.html")
+        defer { shown.close() }
+        let value = try await shown.evaluate("return document.querySelector('p')?.textContent ?? null")
+        let paragraph = try #require(value as? String, "the reader renders the HTML")
+        #expect(paragraph.contains("\u{FFFD}"), "decoded as UTF-8, with replacement marks: \(paragraph)")
+        #expect(!paragraph.contains("天氣"), "not as Big5")
+    }
+
     // MARK: Fixtures
 
     /// Shows `html` in a phone-sized window with the given appearance.

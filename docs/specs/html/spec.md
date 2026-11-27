@@ -75,3 +75,17 @@ WHEN an HTML document's script calls `alert`, `confirm`, or `prompt`, the reader
 
 - **WHEN** a script calls `alert`, then `confirm`, then `prompt`, and writes down what they returned
 - **THEN** no dialog appears, and the script writes `false` and `null`
+
+### Requirement: HTML-6.1 Its own charset
+
+WHEN an HTML document without a byte-order mark declares its charset, with `<meta charset>` or a `<meta http-equiv="Content-Type">`, the reader SHALL decode it in that charset rather than detect one, as a browser does.
+
+#### Scenario: declared charsets
+
+- **WHEN** a document declares `windows-1252` and holds `Café`, declares `iso-8859-1` through `http-equiv` and holds `Crème brûlée`, or declares `shift_jis` and holds Japanese
+- **THEN** the reader shows each text as written
+
+#### Scenario: the declaration wins
+
+- **WHEN** a document declares `utf-8` but its bytes are Big5
+- **THEN** the reader decodes it as UTF-8, with replacement marks, not as Big5
