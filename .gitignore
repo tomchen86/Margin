@@ -1,2 +1,8 @@
 reports/
 .DS_Store
+# Xcode and SwiftPM
+xcuserdata/
+*.xcuserstate
+DerivedData/
+.build/
+.swiftpm/

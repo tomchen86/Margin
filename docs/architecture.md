@@ -4,15 +4,15 @@ The system as it is now, on one page. Reasons live in `docs/adr/`.
 
 ```mermaid
 flowchart LR
-  user([User]) --> client[Client]
-  client --> server[Server]
-  server --> db[(Database)]
+  user([User]) --> app[Margin app]
+  app --> reader[MarginReader package]
 ```
 
 | Part | Responsibility | Where |
 |---|---|---|
-| Client | <What it owns> | `<top-level directory>` |
-| Server | <What it owns> | `<top-level directory>` |
+| Margin app | The iOS and iPadOS app: the document browser and its menus, built on the reader | `Margin/` |
+| MarginReader | The reader the app and the Quick Look extension share: page building, `margin://` handling, the bundled web files, folder grants, and text decoding (ADR-0003) | `MarginReader/` |
+| Tests | Acceptance tests citing requirement IDs, in Swift Testing inside the app and in XCUITest driving it, and other tests | `tests/` |
 
 Name top-level directories only. File paths go stale.
 

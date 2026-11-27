@@ -11,6 +11,9 @@ rm -rf reports/junit && mkdir -p reports/junit
 # point. Keep this line when you replace the block.
 trap 'status=$?; python3 scripts/trace_check.py || status=1; exit "$status"' EXIT
 
-# No Xcode project yet: nothing to lint or test. Once it exists, replace this line with
-# swift-format lint, then xcodebuild test with a JUnit report into reports/junit/.
-echo "check.sh: no app yet; only the requirement trace runs."
+# Lint and format check, then build (the typecheck) and test on a simulator. The tests run
+# even when lint fails, so one run reports both.
+status=0
+xcrun swift-format lint --strict --recursive . || status=1
+bash scripts/test.sh || status=1
+exit "$status"
