@@ -12,12 +12,12 @@ struct DocumentBrowser {
     let folder: URL
 
     /// Puts `files` (path in the folder → contents) into a new folder in On My iPhone, launches the
-    /// app in English, and shows that folder in the document browser.
-    static func launch(with files: [String: Data], file: StaticString = #filePath, line: UInt = #line) throws
-        -> DocumentBrowser
-    {
+    /// app in English with `arguments` added, and shows that folder in the document browser.
+    static func launch(
+        with files: [String: Data], arguments: [String] = [], file: StaticString = #filePath, line: UInt = #line
+    ) throws -> DocumentBrowser {
         let app = XCUIApplication()
-        app.launchArguments += ["-AppleLanguages", "(en)", "-AppleLocale", "en_US"]
+        app.launchArguments += ["-AppleLanguages", "(en)", "-AppleLocale", "en_US"] + arguments
         let storage = try onMyIPhone()
         // Earlier runs leave their folders behind on a reused simulator.
         for old in try FileManager.default.contentsOfDirectory(at: storage, includingPropertiesForKeys: nil)
@@ -125,8 +125,15 @@ struct DocumentBrowser {
         throw CocoaError(.fileNoSuchFile, userInfo: [NSFilePathErrorKey: groups.path + " (On My iPhone)"])
     }
 
+    /// Closes the app and opens it again with the same launch arguments, back in the test's folder.
+    func relaunch(file: StaticString = #filePath, line: UInt = #line) throws {
+        app.terminate()
+        app.launch()
+        try showFolder(named: folder.lastPathComponent, file: file, line: line)
+    }
+
     /// Goes to Browse, up to its list of locations, then On My iPhone, then the folder `name`.
-    private func showFolder(named name: String, file: StaticString, line: UInt) throws {
+    func showFolder(named name: String, file: StaticString, line: UInt) throws {
         let browse = app.buttons["Browse"].firstMatch
         XCTAssertTrue(browse.waitForExistence(timeout: 30), "the document browser shows", file: file, line: line)
         browse.tap()
