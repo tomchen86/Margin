@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 220" font-family="-apple-system, system-ui" font-size="20">
+  <rect width="640" height="220" rx="18" fill="#eef4ff"/>
+  <g fill="#fff" stroke="#007aff" stroke-width="2">
+    <rect x="30" y="70" width="160" height="80" rx="14"/>
+    <rect x="240" y="70" width="160" height="80" rx="14"/>
+    <rect x="450" y="70" width="160" height="80" rx="14"/>
+  </g>
+  <g fill="#1c1c1e" text-anchor="middle">
+    <text x="110" y="117">.md / .html</text>
+    <text x="320" y="117">margin://</text>
+    <text x="530" y="117">WebView</text>
+  </g>
+  <g stroke="#007aff" stroke-width="3" fill="none" stroke-linecap="round">
+    <path d="M195 110 H232 M224 102 L232 110 L224 118"/>
+    <path d="M405 110 H442 M434 102 L442 110 L434 118"/>
+  </g>
+  <text x="320" y="190" text-anchor="middle" fill="#3c3c43" font-size="16">這張圖放在旁邊的 images/ 資料夾</text>
+</svg>

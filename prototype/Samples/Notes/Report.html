@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<title>報告</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<h1>HTML 報告</h1>
+<p>這個頁面用了旁邊的 <code>style.css</code>（米色背景、襯線字）和 <code>images/</code> 裡的圖片。</p>
+<div class="card">
+  <img src="images/diagram.svg" alt="流程圖" style="width:100%">
+  <p id="js">JavaScript 沒有執行</p>
+</div>
+<p><a href="Welcome.md">← 回到 Welcome.md</a></p>
+<script>document.getElementById('js').textContent = 'JavaScript 有執行 ✓';</script>
+</body>
+</html>
