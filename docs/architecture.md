@@ -4,8 +4,11 @@ The system as it is now, on one page. Reasons live in `docs/adr/`.
 
 ```mermaid
 flowchart LR
-  user([User]) --> app[Margin app]
-  app --> reader[MarginReader package]
+  user([User]) --> app[Margin app: document browser]
+  app --> reader[MarginReader: Reader]
+  reader --> page[WebPage in a WebView]
+  page -- "margin:// requests" --> reader
+  reader -- reads --> file[(Document file)]
 ```
 
 | Part | Responsibility | Where |

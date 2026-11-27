@@ -13,9 +13,20 @@ public final class Reader {
 
     public init(documentURL: URL) {
         self.documentURL = documentURL
-        page = WebPage()
+        var configuration = WebPage.Configuration()
+        if let scheme = URLScheme(ReaderScheme.name) {
+            configuration.urlSchemeHandlers[scheme] = ReaderSchemeHandler(documentURL: documentURL)
+        }
+        // A document is shown as its text, so its page has nothing to run.
+        configuration.defaultNavigationPreferences.allowsContentJavaScript = false
+        page = WebPage(configuration: configuration)
     }
 
     /// Loads the document into ``page`` and returns once the page shows it.
-    public func load() async throws {}
+    public func load() async throws {
+        for try await event in page.load(URLRequest(url: ReaderScheme.pageURL(for: documentURL)))
+        where event == .finished {
+            return
+        }
+    }
 }
