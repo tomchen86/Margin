@@ -215,8 +215,8 @@ The reader SHALL give every heading in a Markdown document an id made from its t
 - **WHEN** three headings read `Notes`, a setext heading reads `Setext Heading`, and a heading inside a block quote reads `Quoted`
 - **THEN** their ids are `notes`, `notes-1`, `notes-2`, `setext-heading`, and `quoted`
 
-#### Scenario: an id of its own
+#### Scenario: HTML headings
 
-- **WHEN** the document holds `<h2 id="custom">Custom heading</h2>`
-- **THEN** that heading's id stays `custom`
+- **WHEN** the document holds `<h2 id="custom">Custom heading</h2>` and `<h3>Raw heading</h3>`
+- **THEN** the first keeps its id `custom`, and the second gets `raw-heading`
 

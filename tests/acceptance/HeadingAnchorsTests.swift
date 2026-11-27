@@ -42,6 +42,8 @@ struct HeadingAnchorsTests {
             > ## Quoted
 
             <h2 id="custom">Custom heading</h2>
+
+            <h3>Raw heading</h3>
             """
         let shown = try await ShownDocument.show(markdown, named: "Headings.md")
         defer { shown.close() }
@@ -51,7 +53,7 @@ struct HeadingAnchorsTests {
             ids == [
                 "hello-world", "foo--bar", "whats-new", "c-and-c", "snake_case-and-kebab-case", "1-introduction",
                 "ünïcödé-café", "中文標題", "標題說明", "use-code-here", "hello-world-1", "notes", "notes-1", "notes-2",
-                "setext-heading", "quoted", "custom",
+                "setext-heading", "quoted", "custom", "raw-heading",
             ])
     }
 
