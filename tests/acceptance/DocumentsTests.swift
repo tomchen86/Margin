@@ -8,7 +8,7 @@ import WebKit
 @MainActor
 @Suite(.serialized)
 struct DocumentsTests {
-    @Test("[DOCUMENTS-3.1] declares itself a viewer that opens Markdown, HTML, and plain text in place")
+    @Test("[DOCUMENTS-3.1] tells iOS it views Markdown, HTML, and plain text, in place")
     func opensInPlace() throws {
         let info = try #require(Bundle.main.infoDictionary)
         #expect(info["LSSupportsOpeningDocumentsInPlace"] as? Bool == true)
@@ -33,8 +33,30 @@ struct DocumentsTests {
         let shown = try await ShownDocument.show(text, named: "Markup.txt")
         defer { shown.close() }
         #expect(try await shown.visibleText() == text)
-        let formatted = try await shown.evaluate("return document.querySelectorAll('b, strong, i, em, p').length")
-        #expect(formatted as? Int == 0)
+        #expect(try await shown.boldOrItalicText() == [], "nothing is bold or italic")
+    }
+
+    @Test("[DOCUMENTS-6.1] shows Markdown as typed")
+    func showsMarkdownAsTyped() async throws {
+        let text = "# Title\n\n*stars* and __underscores__ and `code`\n\n- [ ] task\n> quote"
+        let shown = try await ShownDocument.show(text, named: "Notes.md")
+        defer { shown.close() }
+        #expect(try await shown.visibleText() == text)
+        #expect(try await shown.boldOrItalicText() == [], "nothing is bold or italic")
+    }
+
+    @Test("[DOCUMENTS-6.1] shows HTML as typed, without running its script")
+    func showsHTMLAsTyped() async throws {
+        let text = """
+            <!doctype html>
+            <h1>Title</h1>
+            <p><b>bold</b> <i>italic</i></p>
+            <script>document.body.textContent = "the script ran"</script>
+            """
+        let shown = try await ShownDocument.show(text, named: "Page.html")
+        defer { shown.close() }
+        #expect(try await shown.visibleText() == text)
+        #expect(try await shown.boldOrItalicText() == [], "nothing is bold or italic")
     }
 
     @Test("[DOCUMENTS-6.1] shows source code as typed")
@@ -74,11 +96,12 @@ struct DocumentsTests {
         }
     }
 
-    @Test("[DOCUMENTS-7.1] wraps at 80 characters in a centered column on a wide page")
-    func wrapsAtEightyCharacters() async throws {
+    @Test(
+        "[DOCUMENTS-7.1] wraps at 80 characters in a centered column on a wide page", arguments: ["txt", "md", "html"])
+    func wrapsAtEightyCharacters(fileExtension: String) async throws {
         let line = String(repeating: "x", count: 200)
         let iPad = CGSize(width: 1194, height: 834)
-        let shown = try await ShownDocument.show("0123456789\n" + line, named: "Wide.txt", in: iPad)
+        let shown = try await ShownDocument.show("0123456789\n" + line, named: "Wide." + fileExtension, in: iPad)
         defer { shown.close() }
         let ten = try #require(try await shown.lineBoxes(of: "0123456789").first)
         let first = try #require(try await shown.lineBoxes(of: line).first)
@@ -88,18 +111,25 @@ struct DocumentsTests {
         #expect(abs(first.minX - (page - first.maxX)) <= 1, "the column is centered")
     }
 
-    @Test("[DOCUMENTS-7.1] wraps at the edge of a phone's page, before 80 characters")
-    func wrapsAtPhoneEdge() async throws {
+    @Test(
+        "[DOCUMENTS-7.1] wraps at the right margin of a phone's page, before 80 characters",
+        arguments: ["txt", "md", "html"])
+    func wrapsAtPhoneMargin(fileExtension: String) async throws {
         let line = String(repeating: "x", count: 200)
-        let shown = try await ShownDocument.show("0123456789\n" + line, named: "Narrow.txt")
+        let shown = try await ShownDocument.show("0123456789\n" + line, named: "Narrow." + fileExtension)
         defer { shown.close() }
         let ten = try #require(try await shown.lineBoxes(of: "0123456789").first)
+        let character = ten.width / 10
         let boxes = try await shown.lineBoxes(of: line)
         let first = try #require(boxes.first)
-        #expect(first.width / (ten.width / 10) < 80)
+        #expect(first.width / character < 80)
         #expect(boxes.count >= 3, "200 characters take three lines or more")
         let page = try #require(try await shown.evaluate("return innerWidth") as? Double)
         #expect(boxes.allSatisfy { $0.minX >= 0 && $0.maxX <= page })
+        #expect(first.minX <= 24, "the left margin is at most 24 points")
+        #expect(
+            page - first.maxX <= 24 + character,
+            "the line wraps within one character of a right margin of at most 24 points")
     }
 
     @Test("[DOCUMENTS-6.1] shows an empty file as an empty page")

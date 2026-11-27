@@ -39,18 +39,18 @@ IF a file is neither Markdown, HTML, nor plain text, THEN the app SHALL not open
 - **WHEN** the owner taps `Data.json` in the document browser
 - **THEN** no reader opens and the document browser stays
 
-### Requirement: DOCUMENTS-3.1 Other apps open documents in place
+### Requirement: DOCUMENTS-3.1 Declared as an in-place viewer
 
-WHEN another app hands the app a Markdown, HTML, or plain-text file, the app SHALL open that file where it is, not a copy of it.
+The app SHALL declare to iOS that it views Markdown, HTML, and plain-text files and opens them in place, so that other apps can hand it such a file without a copy being made.
 
-#### Scenario: Open in Margin from Files
+#### Scenario: what iOS is told
 
-- **WHEN** the owner shares `Notes.md` from the Files app to Margin
-- **THEN** Margin shows `Notes.md` from its folder, and no copy of it is made
+- **WHEN** iOS reads the app's declarations
+- **THEN** they name Markdown (`net.daringfireball.markdown`), HTML (`public.html`), and plain text (`public.plain-text`) with the Viewer role, and say that documents open in place
 
 ### Requirement: DOCUMENTS-4.1 Never writes
 
-The app SHALL never write to an opened document or to any file next to it.
+The app SHALL never write to an opened document or to any file next to it, other than through a file action the owner chooses in the system's document browser.
 
 #### Scenario: open, read, close
 
@@ -66,9 +66,9 @@ WHEN the owner taps the title of an open document, the app SHALL offer no way to
 - **WHEN** the owner opens `Notes.txt` and taps its title
 - **THEN** the title still names the file, and no Rename, Move, or Duplicate appears
 
-### Requirement: DOCUMENTS-6.1 Plain text as written
+### Requirement: DOCUMENTS-6.1 Text as written
 
-WHEN the owner opens a plain-text file, the reader SHALL show its text exactly as written, in the system's monospaced font, with every space and blank line kept, long lines wrapped, and markup shown as typed.
+WHEN the owner opens a plain-text, Markdown, or HTML file, the reader SHALL show its text exactly as written, in the system's monospaced font, with every space and blank line kept, long lines wrapped, and markup shown as typed.
 
 #### Scenario: spaces and blank lines
 
@@ -79,6 +79,11 @@ WHEN the owner opens a plain-text file, the reader SHALL show its text exactly a
 
 - **WHEN** the file holds `<b>bold</b> &amp; **stars**`
 - **THEN** the reader shows exactly those characters, and nothing is bold
+
+#### Scenario: Markdown and HTML
+
+- **WHEN** `Notes.md` holds `# Title` and `*stars*`, and `Page.html` holds `<h1>Title</h1>` and a `<script>`
+- **THEN** the reader shows each file's text character for character, nothing is bold or italic, and the script does not run
 
 #### Scenario: source code
 
@@ -100,16 +105,16 @@ WHEN the owner opens a plain-text file, the reader SHALL show its text exactly a
 - **WHEN** the file is empty
 - **THEN** the reader shows an empty page, with no error
 
-### Requirement: DOCUMENTS-7.1 Plain text in a readable column
+### Requirement: DOCUMENTS-7.1 Text in a readable column
 
-WHILE the page is wider than 80 characters of plain text, the reader SHALL wrap plain text at 80 characters, in a column centered on the page.
+WHILE the page is wider than 80 characters of text, the reader SHALL wrap the text of a plain-text, Markdown, or HTML file at 80 characters, in a column centered on the page.
 
 #### Scenario: iPad in landscape
 
-- **WHEN** a plain-text file with a 200-character line is shown on a page 1194 points wide
+- **WHEN** `Wide.txt`, `Wide.md`, or `Wide.html`, each holding a 200-character line, is shown on a page 1194 points wide
 - **THEN** the line wraps after 80 characters, with as much space left of the column as right of it
 
 #### Scenario: iPhone in portrait
 
-- **WHEN** the same file is shown on a page 402 points wide
-- **THEN** the line wraps at the edge of the page, before 80 characters
+- **WHEN** the same files are shown on a page 402 points wide
+- **THEN** the line wraps within one character of the page's right margin, before 80 characters, and neither margin is wider than 24 points

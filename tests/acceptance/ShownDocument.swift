@@ -82,6 +82,21 @@ struct ShownDocument {
         return try await evaluate(script, ["text": text, "property": property]) as? String
     }
 
+    /// The pieces of text the page shows in bold or italic.
+    func boldOrItalicText() async throws -> [String] {
+        let script = """
+            const styled = [];
+            const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+            for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+              if (!node.data.trim()) continue;
+              const style = getComputedStyle(node.parentElement);
+              if (Number(style.fontWeight) >= 600 || style.fontStyle !== "normal") styled.push(node.data);
+            }
+            return styled;
+            """
+        return try #require(try await evaluate(script) as? [String])
+    }
+
     func close() {
         window.isHidden = true
     }

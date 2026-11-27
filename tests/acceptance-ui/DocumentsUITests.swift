@@ -69,9 +69,11 @@ final class DocumentsUITests: XCTestCase {
             .matching(NSPredicate(format: "label BEGINSWITH 'Notes'")).firstMatch
         XCTAssertTrue(title.waitForExistence(timeout: 5), "the title names the file")
         title.tap()
-        for action in ["Rename", "Move", "Duplicate"] {
-            XCTAssertFalse(browser.app.buttons[action].waitForExistence(timeout: 1), "the title offers no \(action)")
-        }
+        let fileAction = browser.app.descendants(matching: .any)
+            .matching(NSPredicate(format: "label IN %@", ["Rename", "Move", "Duplicate"])).firstMatch
+        XCTAssertFalse(
+            fileAction.waitForExistence(timeout: 3),
+            "the title offers no Rename, Move, or Duplicate, but shows \(fileAction.label)")
     }
 
     /// Opens each file from one folder and checks that the reader shows its words.
