@@ -8,9 +8,9 @@ Reading a Markdown or HTML file on an iPhone or iPad should feel like reading it
 
 ## Now
 
-## Next
+- **Daily reader**: Margin is for its owner first, so the first phase is the reader the owner uses every day, together with its Quick Look preview, the owner's top priority, which shares the same reader. Every later phase builds on it. Milestone: [Daily reader](https://github.com/tomchen86/Margin/milestone/1). Proposal: [2026-11-27-daily-reader](proposals/2026-11-27-daily-reader.md)
 
-- **Daily reader**: Margin is for its owner first, so the first phase is the reader the owner uses every day, together with its Quick Look preview, the owner's top priority, which shares the same reader. Every later phase builds on it. Proposal: [2026-11-27-daily-reader](proposals/2026-11-27-daily-reader.md)
+## Next
 
 ## Later
 
