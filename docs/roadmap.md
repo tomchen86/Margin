@@ -10,11 +10,16 @@ Reading a Markdown or HTML file on an iPhone or iPad should feel like reading it
 
 ## Next
 
-- **Daily reader**: Margin is for its owner first, so the first phase is the reader the owner uses every day; the App Store builds on it. Proposal: [2026-11-27-daily-reader](proposals/2026-11-27-daily-reader.md)
+- **Daily reader**: Margin is for its owner first, so the first phase is the reader the owner uses every day; every later phase builds on it. Proposal: [2026-11-27-daily-reader](proposals/2026-11-27-daily-reader.md)
+- **Quick Look preview**: the owner's top priority after the reader itself. Files, Mail, and Messages show Markdown rendered by Margin without opening the app. It reuses the daily reader's renderer, so it comes right after it.
 
 ## Later
 
-- **App Store release**: once the owner relies on the daily reader. Name check, icon, license notices, privacy policy, localization, and whether scripts in HTML files may run.
+- **iPad multiple windows**: several documents side by side, each window reopening its own document. After the reader works well in one window.
+- **Share sheet extension**: open Markdown or HTML that another app shares as text or an attachment. Files already hands documents to Margin without it.
+- **Themes**: reading settings beyond the system look, such as typeface, text width, and color themes. After the default look has been used for a while.
+- **iCloud**: Margin's own folder in iCloud Drive, and settings that follow the owner across devices. Reading from iCloud Drive already works through the system document browser.
+- **App Store release**: once the owner relies on the daily reader and the phases above are in. Name check, icon, license notices, privacy policy, localization, and whether scripts in HTML files may run.
 
 ## Not doing
 

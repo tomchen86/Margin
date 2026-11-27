@@ -42,7 +42,8 @@ Has the owner read their own documents in Margin on a physical iPhone every day 
 
 ## Not doing
 
-- **App Store release**: name check, icon, license notices screen, privacy policy, and localization belong to the next phase, after the owner relies on the app.
+- **Quick Look preview, iPad multiple windows, share sheet extension, themes, Margin's own iCloud folder**: later phases on the roadmap.
+- **App Store release**: name check, icon, license notices screen, privacy policy, and localization belong to a later phase, after the owner relies on the app.
 - **Diagrams (Mermaid and similar)**: not in the goal. ADR-0002's in-page rendering leaves room to add them later.
 - **Managing or syncing files**: the Files app and its providers do that.
 - **A switch to block web content**: added only if the owner needs it.
