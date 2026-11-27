@@ -30,43 +30,50 @@ extension ShownDocument {
     }
 
     /// Whether the page's policy refuses an element `tag` with `attributes` once it is added to
-    /// the page: true when adding it reports a Content Security Policy violation within half a
-    /// second. The element is removed again afterwards.
+    /// the page: true when adding it reports a Content Security Policy violation for the address
+    /// in its `src`, `data`, or `href` within half a second. The element is removed again afterwards.
     func policyRefuses(_ tag: String, _ attributes: [String: String]) async throws -> Bool {
         let script = """
             return await new Promise(resolve => {
               const element = document.createElement(tag);
+              const address = new URL(attributes.src ?? attributes.data ?? attributes.href, location.href).href;
               const finish = refused => {
                 document.removeEventListener("securitypolicyviolation", onViolation);
                 element.remove();
                 resolve(refused);
               };
-              const onViolation = () => finish(true);
+              const onViolation = event => {
+                if (event.blockedURI && address.startsWith(event.blockedURI)) finish(true);
+              };
               document.addEventListener("securitypolicyviolation", onViolation);
               for (const [name, value] of Object.entries(attributes)) element.setAttribute(name, value);
               (document.body ?? document.documentElement).append(element);
               setTimeout(() => finish(false), 500);
             });
             """
-        return try #require(try await evaluate(script, ["tag": tag, "attributes": attributes]) as? Bool)
+        let refused = try await evaluate(script, ["tag": tag, "attributes": attributes]) as? Bool
+        return try #require(refused)
     }
 
     /// Whether the page's policy refuses what `action`, JavaScript run in the page, tries to load:
-    /// true when it reports a Content Security Policy violation within half a second.
-    func policyRefuses(running action: String) async throws -> Bool {
+    /// true when it reports a violation of `directive`, such as `font-src`, within half a second.
+    func policyRefuses(running action: String, under directive: String) async throws -> Bool {
         let script = """
             return await new Promise(resolve => {
               const finish = refused => {
                 document.removeEventListener("securitypolicyviolation", onViolation);
                 resolve(refused);
               };
-              const onViolation = () => finish(true);
+              const onViolation = event => {
+                if ((event.effectiveDirective || event.violatedDirective).startsWith(directive)) finish(true);
+              };
               document.addEventListener("securitypolicyviolation", onViolation);
               try { \(action) } catch {}
               setTimeout(() => finish(false), 500);
             });
             """
-        return try #require(try await evaluate(script) as? Bool)
+        let refused = try await evaluate(script, ["directive": directive]) as? Bool
+        return try #require(refused)
     }
 
     /// Waits `seconds` in the page, so that what the page might run on its own gets the chance.

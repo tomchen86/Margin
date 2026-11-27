@@ -172,3 +172,12 @@ WHEN a Markdown document shows an image wider than the column, the reader SHALL 
 
 - **WHEN** the document shows a 2000 × 100 image on a page 402 points wide
 - **THEN** the image is as wide as the column and a twentieth as tall
+
+### Requirement: MARKDOWN-14.1 The document's own styles
+
+WHEN a Markdown document contains a `<style>` element or a `style` attribute, the reader SHALL apply it, and SHALL not load a stylesheet from the web.
+
+#### Scenario: a style element, an attribute, and a web stylesheet
+
+- **WHEN** the document holds `<style>.note { color: green } table { font-size: 12px }</style>`, a paragraph of class `note`, a table, `<span style="color: red">`, and `<link rel="stylesheet" href="https://…">`
+- **THEN** the note is green, the table's text is 12 points, the span is red, and the web stylesheet does not load
