@@ -82,7 +82,7 @@ struct ReaderSchemeHandler: URLSchemeHandler {
             return try bundledFile(url.path(percentEncoded: false))
         case ReaderScheme.fileHost where ReaderScheme.isPage(url, of: documentURL):
             let document = try FileReading.data(of: documentURL, document: documentURL, grants: grants)
-            let text = String(decoding: document, as: UTF8.self)
+            let text = TextDecoding.string(from: document)
             let title = documentURL.lastPathComponent
             let page =
                 switch DocumentKind(documentURL: documentURL) {
