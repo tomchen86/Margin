@@ -1,0 +1,111 @@
+# Reading
+
+## Purpose
+
+How the reader's own pages read like system text, the system font at the owner's text size in light and dark mode, and what the owner can do with a document from the `More` menu in the toolbar. The reader's own pages are those of Markdown documents and of documents shown as their text. An HTML document keeps its own fonts, sizes, and colors (HTML-3.1, HTML-4.1).
+
+## Requirements
+
+### Requirement: READING-1.1 System font
+
+The reader SHALL show a Markdown document's text in the system font.
+
+#### Scenario: paragraphs, headings, and lists
+
+- **WHEN** the owner opens a Markdown document with a heading, a paragraph, and a list
+- **THEN** each is in the system font
+
+### Requirement: READING-2.1 The owner's text size
+
+The reader SHALL size the text of Markdown documents and of documents shown as their text by the owner's text size, with body text at the system's body size for that setting.
+
+#### Scenario: the default size
+
+- **WHEN** the owner's text size is the default
+- **THEN** a Markdown paragraph and a plain-text file's text are at the system's body size, 17 points
+
+#### Scenario: the largest size
+
+- **WHEN** the owner's text size is the largest accessibility size
+- **THEN** a Markdown paragraph and a plain-text file's text are more than twice as tall as at the default size
+
+### Requirement: READING-3.1 (manual) A text size change at once
+
+WHEN the owner changes the text size while a document is open, the reader SHALL show the document at the new size at once, without reopening it.
+
+#### Scenario: from Control Center
+
+- **WHEN** the owner raises the text size in Control Center while reading a Markdown document
+- **THEN** the page's text grows as soon as Control Center closes
+
+### Requirement: READING-4.1 Light and dark
+
+The reader SHALL show Markdown documents and documents shown as their text with dark text on a light background in light mode, and light text on a dark background in dark mode, switching at once when the mode changes.
+
+#### Scenario: each mode
+
+- **WHEN** a Markdown document and a plain-text file are shown in light mode, then in dark mode
+- **THEN** each has dark text on a light background, then light text on a dark background
+
+#### Scenario: switching while open
+
+- **WHEN** the mode changes from light to dark while a document is shown
+- **THEN** the page turns dark without reopening
+
+### Requirement: READING-5.1 Find
+
+WHEN the owner chooses Find in the `More` menu, or presses ⌘F on a hardware keyboard, the reader SHALL show the system find bar, which finds what the owner types on the page.
+
+#### Scenario: from the menu
+
+- **WHEN** a document holds `Lychee` three times, and the owner chooses Find and types `Lychee`
+- **THEN** the find bar shows `1 of 3`
+
+#### Scenario: with the keyboard
+
+- **WHEN** the owner presses ⌘F and types `Mango`, which the document holds once
+- **THEN** the find bar shows `1 of 1`
+
+### Requirement: READING-6.1 View Source
+
+WHEN the owner chooses View Source in the `More` menu for a Markdown or HTML document, the reader SHALL show the file's text unrendered, as written, in the system's monospaced font at the owner's text size, with long lines wrapped, starting at the top of the page, and the menu SHALL offer View Rendered, which switches back to the top of the rendered page.
+
+#### Scenario: Markdown
+
+- **WHEN** the owner chooses View Source for a Markdown document holding `# Title` and `**bold**`
+- **THEN** the reader shows `# Title` and `**bold**` as typed, and View Rendered shows the heading and bold text again
+
+#### Scenario: HTML
+
+- **WHEN** the owner chooses View Source for an HTML document whose script would add `Pomelo` to the page
+- **THEN** the reader shows the markup and the script as typed, and `Pomelo` does not appear
+
+#### Scenario: plain text
+
+- **WHEN** the owner opens the `More` menu for a plain-text document
+- **THEN** it offers no View Source
+
+#### Scenario: the top of the page
+
+- **WHEN** the owner has scrolled far down a long document and chooses View Source, then View Rendered
+- **THEN** each shows the top of the page
+
+#### Scenario: Find in the source
+
+- **WHEN** the source of a document holding `**Lychee**` is shown and the owner finds `**`
+- **THEN** the find bar shows `1 of 2`, finding the source's characters
+
+### Requirement: READING-7.1 Share
+
+WHEN the owner chooses Share in the `More` menu, the app SHALL open the system share sheet with the document's file itself, not a rendering of it.
+
+#### Scenario: a Markdown file
+
+- **WHEN** the owner shares `Notes.md`, a file of 24 bytes
+- **THEN** the share sheet names `Notes` and shows the file's size, 24 bytes
+
+#### Scenario: an HTML file
+
+- **WHEN** the owner shares `Page.html`
+- **THEN** the share sheet names `Page` and shows the file's size in bytes
+
