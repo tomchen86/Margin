@@ -8,7 +8,7 @@ Which files Margin opens, how they reach the reader, and how their text is shown
 
 ### Requirement: DOCUMENTS-1.1 Opens Markdown, HTML, and text files
 
-WHEN the owner opens a Markdown file (`.md`, `.markdown`, `.mdown`, `.mkd`, `.mkdn`), an HTML file (`.html`, `.htm`), a JSON, YAML, or XML file (`.json`, `.yaml`, `.yml`, `.xml`), or a file the system counts as plain text (such as `.txt`, source code, and logs) from the document browser, the app SHALL show it in the reader.
+WHEN the owner opens a Markdown file (`.md`, `.markdown`, `.mdown`, `.mkd`, `.mkdn`), an HTML file (`.html`, `.htm`), a file the system counts as JSON, YAML, or XML (such as `.json`, `.yaml`, `.yml`, and `.xml`, and formats built on them, such as `.svg`, `.xhtml`, `.rss`, and `.geojson`), or a file the system counts as plain text (such as `.txt`, source code, and logs) from the document browser, the app SHALL show it in the reader.
 
 #### Scenario: every Markdown extension
 
@@ -35,13 +35,18 @@ WHEN the owner opens a Markdown file (`.md`, `.markdown`, `.mdown`, `.mkd`, `.mk
 - **WHEN** the owner opens `Data.json`, `Config.yaml`, `Config.yml`, or `Feed.xml`
 - **THEN** the reader shows the words in the file
 
+#### Scenario: formats built on XML and JSON
+
+- **WHEN** the owner opens `Logo.svg` or `Map.geojson`
+- **THEN** the reader shows the words in the file
+
 ### Requirement: DOCUMENTS-2.1 Other files stay closed
 
 IF a file is of no kind DOCUMENTS-1.1 names, THEN the app SHALL not open it from the document browser.
 
 #### Scenario: TOML and INI
 
-- **WHEN** the owner taps `Settings.toml` or `Setup.ini` in the document browser
+- **WHEN** the owner taps `Settings.toml`, `Setup.ini`, or `Letter.rtf` in the document browser
 - **THEN** the browser shows the file as unavailable, no reader opens, and the document browser stays
 
 ### Requirement: DOCUMENTS-3.1 Declared as an in-place viewer
@@ -92,8 +97,8 @@ WHEN the owner opens a document, the reader SHALL show its text exactly as writt
 
 #### Scenario: JSON, YAML, and XML
 
-- **WHEN** `Data.json`, `Config.yaml`, and `Feed.xml` hold indented data, and `Feed.xml` starts with `<?xml version="1.0"?>`
-- **THEN** the reader shows each file's text character for character, not as a tree or with its markup hidden
+- **WHEN** `Data.json`, `Config.yaml`, and `Feed.xml` hold indented data, `Feed.xml` starts with `<?xml version="1.0"?>`, and `Logo.svg` draws a circle
+- **THEN** the reader shows each file's text character for character, not as a tree, an image, or with its markup hidden
 
 #### Scenario: source code
 

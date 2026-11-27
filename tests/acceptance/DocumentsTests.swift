@@ -64,12 +64,14 @@ struct DocumentsTests {
     }
 
     @Test(
-        "[DOCUMENTS-6.1] shows JSON, YAML, and XML as typed",
+        "[DOCUMENTS-6.1] shows JSON, YAML, XML, and SVG as typed",
         arguments: [
             "Data.json": "{\n  \"fruit\": \"Nectarine\",\n  \"count\": 3\n}",
             "Config.yaml": "fruit: Orange\nlist:\n  - one\n  - two",
             "Feed.xml":
                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<feed>\n  <entry id=\"1\">Quince &amp; pear</entry>\n</feed>",
+            "Logo.svg":
+                "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"40\" height=\"40\">\n  <circle cx=\"20\" cy=\"20\" r=\"18\"/>\n</svg>",
         ])
     func showsDataAsTyped(name: String, text: String) async throws {
         let shown = try await ShownDocument.show(text, named: name)

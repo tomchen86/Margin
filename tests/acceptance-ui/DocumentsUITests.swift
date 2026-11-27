@@ -33,12 +33,14 @@ final class DocumentsUITests: XCTestCase {
         ])
     }
 
-    func test_DOCUMENTS_1_1_opensJSONYAMLAndXML() throws {
+    func test_DOCUMENTS_1_1_opensJSONYAMLXMLAndFormatsBuiltOnThem() throws {
         try opensEach([
             "Nectarine.json": #"{"fruit": "Nectarine orchard"}"#,
             "Orange.yaml": "fruit: Orange orchard",
             "Peach.yml": "fruit: Peach orchard",
             "Quince.xml": #"<?xml version="1.0"?><fruit>Quince orchard</fruit>"#,
+            "Tangerine.svg": #"<svg xmlns="http://www.w3.org/2000/svg"><text>Tangerine orchard</text></svg>"#,
+            "Ugli.geojson": #"{"type": "Feature", "properties": {"name": "Ugli orchard"}}"#,
         ])
     }
 
@@ -46,8 +48,9 @@ final class DocumentsUITests: XCTestCase {
         let browser = try DocumentBrowser.launch(with: [
             "Settings.toml": #"fruit = "Raspberry orchard""#,
             "Setup.ini": "[fruit]\nname = Strawberry orchard",
+            "Letter.rtf": #"{\rtf1\ansi Vanilla orchard}"#,
         ])
-        for name in ["Settings", "Setup"] {
+        for name in ["Settings", "Setup", "Letter"] {
             let cell = browser.cell(name)
             XCTAssertTrue(cell.waitForExistence(timeout: 10))
             XCTAssertFalse(cell.isEnabled, "the browser shows \(name) as unavailable")
