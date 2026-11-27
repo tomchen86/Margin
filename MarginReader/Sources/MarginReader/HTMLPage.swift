@@ -22,9 +22,10 @@ enum HTMLPage {
     static let prescanLength = 1024
 
     /// Whether the first 1024 bytes hold `<meta charset>` or a `<meta http-equiv="Content-Type">`
-    /// that names a charset, as a browser's prescan finds them.
+    /// that names a charset, outside comments, as a browser's prescan finds them.
     static func declaresCharset(_ document: Data) -> Bool {
-        let head = latin1(document.prefix(prescanLength))
+        // Comments are skipped, as in a browser's prescan; one left open runs to the end.
+        let head = latin1(document.prefix(prescanLength)).replacing(/<!--[\s\S]*?(?:-->|$)/, with: "")
         return head.matches(of: /(?i)<meta\b[^>]*>/).contains { match in
             let tag = match.output
             if tag.contains(/(?i)\scharset\s*=/) && !tag.contains(/(?i)\bcontent\s*=/) {

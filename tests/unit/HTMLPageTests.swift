@@ -21,6 +21,8 @@ import Testing
         #"<meta name="description" content="Notes">"#,
         #"<meta http-equiv="refresh" content="5">"#,
         String(repeating: " ", count: 1024) + #"<meta charset="windows-1252">"#,
+        #"<!-- <meta charset="windows-1252"> --><p>Text</p>"#,
+        #"<!-- unclosed <meta charset="windows-1252">"#,
     ])
     func findsNoDeclaration(_ head: String) {
         #expect(!HTMLPage.declaresCharset(Data(head.utf8)))
