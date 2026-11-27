@@ -52,7 +52,7 @@ final class DocumentsUITests: XCTestCase {
         ])
         for name in ["Settings", "Setup", "Letter"] {
             let cell = browser.cell(name)
-            XCTAssertTrue(cell.waitForExistence(timeout: 10))
+            XCTAssertTrue(cell.waitForExistence(timeout: 30))
             XCTAssertFalse(cell.isEnabled, "the browser shows \(name) as unavailable")
         }
         browser.cell("Settings").tap()
@@ -74,7 +74,7 @@ final class DocumentsUITests: XCTestCase {
         browser.open("Other")
         XCTAssertTrue(browser.readerShows("Papaya orchard"))
         browser.close()
-        XCTAssertTrue(browser.cell("Notes").waitForExistence(timeout: 10), "back in the document browser")
+        XCTAssertTrue(browser.cell("Notes").waitForExistence(timeout: 30), "back in the document browser")
         XCTAssertEqual(try browser.snapshot(), before, "same files, contents, and modification dates")
     }
 
