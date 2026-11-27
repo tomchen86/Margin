@@ -484,8 +484,45 @@ struct MarkdownTests {
             try await shown.policyRefuses("link", ["rel": "stylesheet", "href": "https://margin.invalid/style.css"]))
         #expect(
             try await shown.policyRefuses(
-                running: "new FontFace('Probe', 'url(https://margin.invalid/font.woff2)').load().catch(() => {});"))
-        #expect(try await shown.policyRefuses(running: "fetch('https://margin.invalid/data').catch(() => {});"))
+                running: "new FontFace('Probe', 'url(https://margin.invalid/font.woff2)').load().catch(() => {});",
+                under: "font-src"))
+        #expect(
+            try await shown.policyRefuses(
+                running: "fetch('https://margin.invalid/data').catch(() => {});", under: "connect-src"))
+    }
+
+    @Test("[MARKDOWN-14.1] applies the document's own style elements and attributes, not stylesheets from the web")
+    func appliesTheDocumentsOwnStyles() async throws {
+        let markdown = """
+            <style>.note { color: rgb(0, 128, 0); } table { font-size: 12px; }</style>
+
+            <p class="note">Green note.</p>
+
+            Plain words in <span style="color: rgb(255, 0, 0)">red</span>.
+
+            | Small |
+            |-------|
+            | cell |
+            """
+        let shown = try await ShownDocument.show(markdown, named: "Styled.md")
+        defer { shown.close() }
+        struct Page: Decodable {
+            let note, red, tableSize: String?
+        }
+        let page = try await shown.json(
+            Page.self,
+            """
+            const note = document.querySelector("p.note");
+            const red = [...document.querySelectorAll("span")].find(span => span.textContent === "red");
+            const table = document.querySelector("table");
+            return { note: note ? getComputedStyle(note).color : null, red: red ? getComputedStyle(red).color : null,
+                     tableSize: table ? getComputedStyle(table).fontSize : null };
+            """)
+        #expect(page.note == "rgb(0, 128, 0)", "the document's <style> applies")
+        #expect(page.tableSize == "12px", "the document's <style> applies to Markdown's own elements too")
+        #expect(page.red == "rgb(255, 0, 0)", "a style attribute applies")
+        #expect(
+            try await shown.policyRefuses("link", ["rel": "stylesheet", "href": "https://margin.invalid/theme.css"]))
     }
 
     // MARK: Layout
