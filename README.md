@@ -4,9 +4,10 @@ A minimal, native-feeling iOS app for reading Markdown and HTML files. Open a fi
 
 ## Develop
 
+Open `Margin.xcodeproj` in Xcode 26 and run the `Margin` scheme on an iOS 26 simulator. From the command line, name the simulator to use:
+
 ```bash
-# Needs Xcode 26. The Xcode project arrives with the first feature.
-bash scripts/check.sh            # lint, format check, typecheck, tests, requirement trace
+MARGIN_DESTINATION="platform=iOS Simulator,name=iPhone 17 Pro" bash scripts/check.sh   # lint, format check, typecheck, tests, requirement trace
 ```
 
 ## Where things are
