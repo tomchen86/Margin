@@ -78,6 +78,11 @@
 			</array>
 		</dict>
 	</array>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoadsInWebContent</key>
+		<true/>
+	</dict>
 	<key>LSSupportsOpeningDocumentsInPlace</key>
 	<true/>
 	<key>UISupportsDocumentBrowser</key>

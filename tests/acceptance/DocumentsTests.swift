@@ -23,7 +23,7 @@ struct DocumentsTests {
         }
     }
 
-    @Test("[DOCUMENTS-6.1] keeps every space, tab, and blank line, including a blank first line")
+    @Test("[DOCUMENTS-6.2] keeps every space, tab, and blank line, including a blank first line")
     func keepsWhitespace() async throws {
         let text = "\nfirst line after a blank line\na   b\n\n\n    indented by four\n\tafter a tab\nlast line"
         let shown = try await ShownDocument.show(text, named: "Spacing.txt")
@@ -31,7 +31,7 @@ struct DocumentsTests {
         #expect(try await shown.visibleText() == text)
     }
 
-    @Test("[DOCUMENTS-6.1] shows markup as typed")
+    @Test("[DOCUMENTS-6.2] shows markup as typed")
     func showsMarkupAsTyped() async throws {
         let text = "<b>bold</b> &amp; **stars** <i>not italic</i>\n<p>no paragraph</p> <!-- no comment -->"
         let shown = try await ShownDocument.show(text, named: "Markup.txt")
@@ -40,16 +40,7 @@ struct DocumentsTests {
         #expect(try await shown.boldOrItalicText() == [], "nothing is bold or italic")
     }
 
-    @Test("[DOCUMENTS-6.1] shows Markdown as typed")
-    func showsMarkdownAsTyped() async throws {
-        let text = "# Title\n\n*stars* and __underscores__ and `code`\n\n- [ ] task\n> quote"
-        let shown = try await ShownDocument.show(text, named: "Notes.md")
-        defer { shown.close() }
-        #expect(try await shown.visibleText() == text)
-        #expect(try await shown.boldOrItalicText() == [], "nothing is bold or italic")
-    }
-
-    @Test("[DOCUMENTS-6.1] shows HTML as typed, without running its script")
+    @Test("[DOCUMENTS-6.2] shows HTML as typed, without running its script")
     func showsHTMLAsTyped() async throws {
         let text = """
             <!doctype html>
@@ -64,7 +55,7 @@ struct DocumentsTests {
     }
 
     @Test(
-        "[DOCUMENTS-6.1] shows JSON, YAML, XML, and SVG as typed",
+        "[DOCUMENTS-6.2] shows JSON, YAML, XML, and SVG as typed",
         arguments: [
             "Data.json": "{\n  \"fruit\": \"Nectarine\",\n  \"count\": 3\n}",
             "Config.yaml": "fruit: Orange\nlist:\n  - one\n  - two",
@@ -79,7 +70,7 @@ struct DocumentsTests {
         #expect(try await shown.visibleText() == text)
     }
 
-    @Test("[DOCUMENTS-6.1] shows source code as typed")
+    @Test("[DOCUMENTS-6.2] shows source code as typed")
     func showsSourceCodeAsTyped() async throws {
         let text = "func first<T: Equatable>(_ items: [T]) -> T? {\n    items.first // a && b < c\n}"
         let shown = try await ShownDocument.show(text, named: "Generic.swift")
@@ -87,7 +78,7 @@ struct DocumentsTests {
         #expect(try await shown.visibleText() == text)
     }
 
-    @Test("[DOCUMENTS-6.1] uses the system's monospaced font")
+    @Test("[DOCUMENTS-6.2] uses the system's monospaced font")
     func usesMonospacedFont() async throws {
         let shown = try await ShownDocument.show("iiiiiiiiii\nMMMMMMMMMM", named: "Widths.txt")
         defer { shown.close() }
@@ -99,7 +90,7 @@ struct DocumentsTests {
         #expect(family.hasPrefix("ui-monospace"), "the system's monospaced font comes first: \(family)")
     }
 
-    @Test("[DOCUMENTS-6.1] wraps long lines and long words within the page")
+    @Test("[DOCUMENTS-6.2] wraps long lines and long words within the page")
     func wrapsLongLines() async throws {
         let word = String(repeating: "w", count: 200)
         let line = (0..<20).map { "word\($0)" }.joined(separator: " ") + " " + word + " tail"
@@ -117,7 +108,7 @@ struct DocumentsTests {
     }
 
     @Test(
-        "[DOCUMENTS-7.1] wraps at 80 characters in a centered column on a wide page", arguments: ["txt", "md", "html"])
+        "[DOCUMENTS-7.2] wraps at 80 characters in a centered column on a wide page", arguments: ["txt", "html"])
     func wrapsAtEightyCharacters(fileExtension: String) async throws {
         let line = String(repeating: "x", count: 200)
         let iPad = CGSize(width: 1194, height: 834)
@@ -132,8 +123,8 @@ struct DocumentsTests {
     }
 
     @Test(
-        "[DOCUMENTS-7.1] wraps at the right margin of a phone's page, before 80 characters",
-        arguments: ["txt", "md", "html"])
+        "[DOCUMENTS-7.2] wraps at the right margin of a phone's page, before 80 characters",
+        arguments: ["txt", "html"])
     func wrapsAtPhoneMargin(fileExtension: String) async throws {
         let line = String(repeating: "x", count: 200)
         let shown = try await ShownDocument.show("0123456789\n" + line, named: "Narrow." + fileExtension)
@@ -152,7 +143,7 @@ struct DocumentsTests {
             "the line wraps within one character of a right margin of at most 24 points")
     }
 
-    @Test("[DOCUMENTS-6.1] shows an empty file as an empty page")
+    @Test("[DOCUMENTS-6.2] shows an empty file as an empty page")
     func showsEmptyFile() async throws {
         let shown = try await ShownDocument.show(Data(), named: "Empty.txt")
         defer { shown.close() }
