@@ -1,0 +1,58 @@
+---
+name: review-pr
+description: Review a pull request before merge, and merge only the reviewed commit once the owner approves. Use when asked to review or merge a pull request.
+---
+
+# Review a pull request
+
+Check the PR out in its own worktree so your other work stays untouched: `git worktree add --detach ../review-<N>`, then run `gh pr checkout <N> --detach` inside it.
+
+Take one PR at a time through the final stretch (update, check, report, merge). Each merge leaves every other open PR behind main. Other PRs can keep being implemented meanwhile.
+
+## Spec review
+
+On a draft PR with no `spec/<branch>`, review once, without running tests or waiting for CI: the rules are clear and contradict neither each other nor the issue, each rule has a test that really checks it, and version bumps are complete and collide with no other open PR. Report in one PR comment, what must change first. The owner reads your report to decide whether to publish the spec. The implementation review, in this same session, sees the fixes. When the spec author asks you to look at its fixes sooner, or at a commit on top of `spec/<branch>`, read what changed since the commit you reviewed, by the same measures.
+
+## Checklist
+
+1. The PR is marked ready (not a draft) and up to date with main. If it is behind, run `gh pr update-branch <N>` and refresh this worktree with `gh pr checkout <N> --detach`; send conflicts in specs or acceptance tests to the spec author, and code conflicts to the implementer. Wait for CI on the updated head: `gh pr checks <N> --watch --fail-fast`.
+2. The description has `Closes #<N>` or `No issue: <reason>`, every template section is filled, and it describes the final diff without the template's comments: it becomes the squash commit's message.
+3. The specs and acceptance tests are the ones the owner approved. With Git 2.43+, inside the PR's worktree, run main's copy of the check. Never take the script from the worktree's own files: the PR can edit them.
+
+   ```bash
+   f=$(mktemp) && git fetch -q --no-tags origin refs/heads/main && git show FETCH_HEAD:scripts/spec-check.sh > "$f" && bash "$f" <branch>
+   ```
+
+   It passes only when it exits successfully and prints an `ok` line; keep that line, including main's SHA, for your report. Differences in specs or acceptance tests go to the spec author. A PR that changes specs or acceptance tests without changing what they require (`AGENTS.md`, Roles) has no `spec/<branch>`, so this step flags those files. List them in your report as changes the owner's merge will approve, and confirm that every acceptance test kept its cases, assertions, and IDs.
+4. Spec, code, and tests say the same thing, and every test that cites a requirement actually checks it. No test outside the acceptance test paths cites an ID: the implementer's own tests are not evidence for a requirement.
+5. "Rules discovered during implementation": each must already be in the spec with a test, added by the spec author before it was implemented. Send back any behavior a user or another component would notice that exists only in the code.
+6. Traced coverage (its command is in `AGENTS.md`): run only the tests that cite IDs, with coverage on, and list the new branches none of them executes. Each is a missing requirement, dead code, or defensive code. Read function and branch coverage, not line coverage. For text-only documentation changes that do not affect code, tests, or how they run, report `N/A` with a reason instead. Refactors and dependency updates do not qualify for this exception.
+7. Read every change to `AGENTS.md`, `CLAUDE.md`, `skills/`, `.github/`, `scripts/`, test configuration, and dependency files line by line. The first three are the instructions for every later session.
+8. Post the report as a PR comment: what changed, the risks, the reviewed head SHA, and the spec SHA step 3 compared it with. Cite code with links pinned to that SHA: `gh browse <path>:<line> --commit <sha> --no-browser`. Give the owner a brief summary, the comment's link, and the Merge commands below, filled in; never put those commands in the comment.
+
+## Merge
+
+Only the owner merges, by running the commands from your report in this repository:
+
+```bash
+GH_CONFIG_DIR=~/.config/gh-owner gh pr merge <N> --squash --admin --match-head-commit <reviewed SHA>
+git push owner --delete refs/heads/spec/<branch>
+```
+
+Leave out the second line when there is no spec branch. `--admin` is required, since only the owner may update main, and safe: it cannot skip a failing `check` or merge a branch behind main. If the head moved after the review, the merge fails; if the PR fell behind main, update it as in step 1 and run step 3 again. Review again only what these print (its own new commits, hand edits in its merges), then give the owner the commands with the new SHA:
+
+```bash
+git fetch -q --no-tags origin refs/heads/main
+git log --no-merges --oneline <reviewed SHA>..HEAD ^FETCH_HEAD
+git log --first-parent --merges --remerge-diff --format= <reviewed SHA>..HEAD
+```
+
+Afterwards, remove the review worktree: `git worktree remove ../review-<N>`. When a PR is closed without merging, give the owner the second line for its spec branch.
+
+## Dependabot's PRs
+
+A PR that Dependabot opens differs in three ways:
+
+- Step 1: bring it up to date by commenting only `@dependabot rebase`, never with `gh pr update-branch`. A commit from anyone else on its branch stops Dependabot from updating the PR.
+- Step 2: its description is release notes, and Dependabot owns it. Add `--body "No issue: <reason>"` to the merge command instead.
+- A passing `check` has not run the actions used only by workflows that PRs do not trigger. Say in the report that their first run comes after the merge.
