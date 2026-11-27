@@ -52,12 +52,13 @@ struct DocumentBrowser {
     /// Taps the file whose name starts with `name`.
     func open(_ name: String, file: StaticString = #filePath, line: UInt = #line) {
         let cell = cell(name)
-        XCTAssertTrue(cell.waitForExistence(timeout: 10), "the browser lists \(name)", file: file, line: line)
+        XCTAssertTrue(cell.waitForExistence(timeout: 30), "the browser lists \(name)", file: file, line: line)
         cell.tap()
     }
 
-    /// Whether the reader shows `text` within `timeout` seconds.
-    func readerShows(_ text: String, timeout: TimeInterval = 10) -> Bool {
+    /// Whether the reader shows `text` within `timeout` seconds. The default allows for a slow CI
+    /// runner, where the system document browser can take more than 10 s to open a file.
+    func readerShows(_ text: String, timeout: TimeInterval = 30) -> Bool {
         app.webViews.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", text)).firstMatch
             .waitForExistence(timeout: timeout)
     }
@@ -110,7 +111,7 @@ struct DocumentBrowser {
     /// Goes to Browse, up to its list of locations, then On My iPhone, then the folder `name`.
     private func showFolder(named name: String, file: StaticString, line: UInt) throws {
         let browse = app.buttons["Browse"].firstMatch
-        XCTAssertTrue(browse.waitForExistence(timeout: 10), "the document browser shows", file: file, line: line)
+        XCTAssertTrue(browse.waitForExistence(timeout: 30), "the document browser shows", file: file, line: line)
         browse.tap()
         let onMyIPhone = app.staticTexts["On My iPhone"].firstMatch
         let up = app.buttons.matching(NSPredicate(format: "identifier == 'BackButton' AND label != 'Back'"))
@@ -122,7 +123,7 @@ struct DocumentBrowser {
         XCTAssertTrue(onMyIPhone.waitForExistence(timeout: 5), "the browser lists On My iPhone", file: file, line: line)
         onMyIPhone.tap()
         let folder = cell(name)
-        XCTAssertTrue(folder.waitForExistence(timeout: 10), "On My iPhone lists \(name)", file: file, line: line)
+        XCTAssertTrue(folder.waitForExistence(timeout: 30), "On My iPhone lists \(name)", file: file, line: line)
         folder.tap()
     }
 }
