@@ -8,17 +8,20 @@ Reading a Markdown or HTML file on an iPhone or iPad should feel like reading it
 
 ## Now
 
-- **<Phase>**: <why now>. Milestone: <link>. Proposal: <link>
-
 ## Next
 
-- **<Phase>**: <why next>. Proposal: <link, once it has one>
+- **Daily reader**: Margin is for its owner first, so the first phase is the reader the owner uses every day, together with its Quick Look preview, the owner's top priority, which shares the same reader. Every later phase builds on it. Proposal: [2026-11-27-daily-reader](proposals/2026-11-27-daily-reader.md)
 
 ## Later
 
-- **<Phase>**: <why later, or what has to be true first>. Proposal: <link, once it has one>
+- **iPad multiple windows**: several documents side by side, each window reopening its own document. After the reader works well in one window.
+- **Share sheet extension**: open Markdown or HTML that another app shares as text or an attachment. Files already hands documents to Margin without it.
+- **Themes**: reading settings beyond the system look, such as typeface, text width, and color themes. After the default look has been used for a while.
+- **iCloud**: Margin's own folder in iCloud Drive, and settings that follow the owner across devices. Reading from iCloud Drive already works through the system document browser.
+- **App Store release**: once the owner relies on the daily reader and the phases above are in. Name check, icon, license notices, privacy policy, localization, and whether scripts in HTML files may run.
+- **Source editing**: the source view becomes editable in the system's native text view, with the reader as its preview, switched on iPhone and side by side on iPad. `DocumentGroup` handles saving, file coordination, and iCloud versions. Last, because it ends the promise that Margin never writes to a file, so the reader proves itself first.
 
 ## Not doing
 
-- **Editing files**: Margin is a viewer. Editing would need a second interface and a save path that can lose data.
-- **Native Markdown rendering (`AttributedString(markdown:)`)**: it drops most of what documents use, such as tables, code highlighting, and math. Markdown becomes HTML in the WebView instead.
+- **WYSIWYG editing, or a code editor inside the WebView**: several times the work of a native source editor, and less native on iPhone.
+- **Converting Markdown with `AttributedString(markdown:)`**: its parser reads `*`, `_`, and `\` inside formulas as Markdown, so math is broken before a math renderer sees it. markdown-it converts Markdown in the WebView instead (ADR-0002).
