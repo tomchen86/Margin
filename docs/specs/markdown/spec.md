@@ -191,3 +191,26 @@ IF a Markdown document contains a `<meta>` or `<base>` element, THEN the reader 
 - **WHEN** the document holds `<meta http-equiv="refresh" content="0; url=?moved">`, `<base href="https://margin.invalid/">`, and `![photo](images/photo.png)`
 - **THEN** the reader stays on the document, and the image resolves to `images/photo.png` next to the document
 
+### Requirement: MARKDOWN-21.1 Highlighted code
+
+WHEN a fenced code block names a language of highlight.js's common build, by its name or an alias, the reader SHALL color the code's syntax, leave its text as typed, and use colors that suit light and dark mode, each readable on the block's background.
+
+#### Scenario: languages and aliases
+
+- **WHEN** blocks are fenced as `swift`, `py`, `js`, `sh`, `json`, `yml`, `sql`, and `diff`
+- **THEN** each block's keywords or values stand out from its plain text, and each block's text is exactly as typed
+
+#### Scenario: light and dark
+
+- **WHEN** a `swift` block is shown in light mode, then in dark mode
+- **THEN** its keyword `func` takes a different color in each mode, and in each it contrasts with the block's background at least 3 to 1
+
+### Requirement: MARKDOWN-22.1 No guessing
+
+WHEN a code block names no language, or one highlight.js's common build does not know, the reader SHALL show it monospaced in one color, without guessing a language.
+
+#### Scenario: unnamed and unknown
+
+- **WHEN** beside a colored `swift` block, a fenced block names no language, another is fenced as `fortran`, and an indented block holds the same code
+- **THEN** each of those three shows its text as typed, monospaced, all in one color
+
