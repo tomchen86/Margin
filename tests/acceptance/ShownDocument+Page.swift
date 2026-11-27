@@ -52,7 +52,7 @@ extension ShownDocument {
             });
             """
         let refused = try await evaluate(script, ["tag": tag, "attributes": attributes]) as? Bool
-        return try #require(refused)
+        return try #require(refused as Bool?)
     }
 
     /// Whether the page's policy refuses what `action`, JavaScript run in the page, tries to load:
@@ -73,7 +73,7 @@ extension ShownDocument {
             });
             """
         let refused = try await evaluate(script, ["directive": directive]) as? Bool
-        return try #require(refused)
+        return try #require(refused as Bool?)
     }
 
     /// Waits `seconds` in the page, so that what the page might run on its own gets the chance.
