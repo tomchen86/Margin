@@ -31,12 +31,18 @@ jobs:
         run: |
           sudo xcode-select --switch "$XCODE_APP"
           xcodebuild -version
-      # A simulator of the job's own, as on a shared machine (AGENTS.md, rule 8).
+      # A simulator of the job's own, as on a shared machine (AGENTS.md, rule 8). It is booted, and
+      # the Files app opened once, before the tests: on a new simulator the system's document browser
+      # takes longer to show the first time than a UI test waits for it.
       - name: Create the simulator
         run: |
           xcrun simctl list runtimes
           udid=$(xcrun simctl create margin-ci "$SIMULATOR_DEVICE" "$SIMULATOR_RUNTIME")
           echo "MARGIN_DESTINATION=id=$udid" >> "$GITHUB_ENV"
+          xcrun simctl bootstatus "$udid" -b
+          xcrun simctl launch "$udid" com.apple.DocumentsApp
+          sleep 30
+          xcrun simctl terminate "$udid" com.apple.DocumentsApp
       - name: Lint, format check, typecheck, tests, requirement trace
         run: bash scripts/check.sh
       - name: Keep the test results of a failed run
