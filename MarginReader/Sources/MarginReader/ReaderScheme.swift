@@ -60,7 +60,7 @@ struct ReaderSchemeHandler: URLSchemeHandler {
             return try bundledFile(url.path(percentEncoded: false))
         case ReaderScheme.fileHost where ReaderScheme.isPage(url, of: documentURL):
             let data = try readDocument(documentURL)
-            let page = TextPage.html(String(decoding: data, as: UTF8.self), title: documentURL.lastPathComponent)
+            let page = TextPage.html(TextDecoding.string(from: data), title: documentURL.lastPathComponent)
             return (Data(page.utf8), "text/html")
         default:
             throw URLError(.fileDoesNotExist)
