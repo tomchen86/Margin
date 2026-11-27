@@ -23,10 +23,15 @@ for target_folder in MarginAcceptanceTests:tests/acceptance MarginAcceptanceUITe
   fi
 done
 
+# A failed test runs once more (a UI test launches the app again): on a new CI simulator the
+# system document browser drops the run's first document open. A test counts as passed if either
+# run passes; a real failure fails both times (AGENTS.md, Commands).
+retry=(-retry-tests-on-failure -test-iterations 2)
+
 results=reports/tests.xcresult
 rm -rf "$results" && mkdir -p reports/junit
 status=0
 xcodebuild test -quiet -project Margin.xcodeproj -scheme Margin -destination "$MARGIN_DESTINATION" \
-  -resultBundlePath "$results" ${skip[@]+"${skip[@]}"} "$@" || status=$?
+  -resultBundlePath "$results" "${retry[@]}" ${skip[@]+"${skip[@]}"} "$@" || status=$?
 python3 scripts/xcresult_junit.py "$results" reports/junit/tests.xml || status=1
 exit "$status"

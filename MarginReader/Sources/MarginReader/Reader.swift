@@ -1,0 +1,32 @@
+import Foundation
+import WebKit
+
+/// Shows one document, read from its file, in a `WebPage`.
+///
+/// The app and the Quick Look extension put ``page`` in a `WebView`.
+@MainActor
+public final class Reader {
+    /// The file this reader shows.
+    public let documentURL: URL
+    /// The page that shows the document.
+    public let page: WebPage
+
+    public init(documentURL: URL) {
+        self.documentURL = documentURL
+        var configuration = WebPage.Configuration()
+        if let scheme = URLScheme(ReaderScheme.name) {
+            configuration.urlSchemeHandlers[scheme] = ReaderSchemeHandler(documentURL: documentURL)
+        }
+        // A document is shown as its text, so its page has nothing to run.
+        configuration.defaultNavigationPreferences.allowsContentJavaScript = false
+        page = WebPage(configuration: configuration)
+    }
+
+    /// Loads the document into ``page`` and returns once the page shows it.
+    public func load() async throws {
+        for try await event in page.load(URLRequest(url: ReaderScheme.pageURL(for: documentURL)))
+        where event == .finished {
+            return
+        }
+    }
+}

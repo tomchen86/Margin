@@ -9,6 +9,7 @@ let package = Package(
         .library(name: "MarginReader", targets: ["MarginReader"])
     ],
     targets: [
-        .target(name: "MarginReader")
+        // Web holds the files pages load from margin://app/ (ADR-0002).
+        .target(name: "MarginReader", resources: [.copy("Web")])
     ]
 )

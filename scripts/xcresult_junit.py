@@ -12,6 +12,8 @@ display name, followed by its function name when that differs, so an ID in eithe
 
 Only "Passed" counts as passed. "Skipped" and "Expected Failure" (a test inside
 withKnownIssue) become <skipped>, anything else <failure>, so neither cites a requirement.
+With xcodebuild's -retry-tests-on-failure, a test case is "Passed" when any of its runs
+passed, and fails only when every run failed.
 A bundle with no test results, such as one from a failed build, writes no file.
 """
 import json
