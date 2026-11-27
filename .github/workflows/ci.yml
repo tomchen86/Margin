@@ -23,13 +23,20 @@ jobs:
     env:
       # The Xcode and simulator the project is built and tested with; swift-format comes with Xcode.
       XCODE_APP: /Applications/Xcode_26.6.app
-      MARGIN_DESTINATION: platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5
+      SIMULATOR_DEVICE: iPhone 17 Pro
+      SIMULATOR_RUNTIME: com.apple.CoreSimulator.SimRuntime.iOS-26-5
     steps:
       - uses: actions/checkout@v7
       - name: Select Xcode
         run: |
           sudo xcode-select --switch "$XCODE_APP"
           xcodebuild -version
+      # A simulator of the job's own, as on a shared machine (AGENTS.md, rule 8).
+      - name: Create the simulator
+        run: |
+          xcrun simctl list runtimes
+          udid=$(xcrun simctl create margin-ci "$SIMULATOR_DEVICE" "$SIMULATOR_RUNTIME")
+          echo "MARGIN_DESTINATION=id=$udid" >> "$GITHUB_ENV"
       - name: Lint, format check, typecheck, tests, requirement trace
         run: bash scripts/check.sh
       - name: Keep the test results of a failed run

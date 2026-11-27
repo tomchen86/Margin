@@ -46,6 +46,17 @@
             parallelizable = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
+               BlueprintIdentifier = "4D5200000000000000000060"
+               BuildableName = "MarginAcceptanceUITests.xctest"
+               BlueprintName = "MarginAcceptanceUITests"
+               ReferencedContainer = "container:Margin.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
                BlueprintIdentifier = "4D5200000000000000000030"
                BuildableName = "MarginTests.xctest"
                BlueprintName = "MarginTests"

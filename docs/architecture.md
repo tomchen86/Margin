@@ -12,7 +12,7 @@ flowchart LR
 |---|---|---|
 | Margin app | The iOS and iPadOS app: the document browser and its menus, built on the reader | `Margin/` |
 | MarginReader | The reader the app and the Quick Look extension share: page building, `margin://` handling, the bundled web files, folder grants, and text decoding (ADR-0003) | `MarginReader/` |
-| Tests | Swift Testing targets that run inside the app: acceptance tests citing requirement IDs, and other tests | `tests/` |
+| Tests | Acceptance tests citing requirement IDs, in Swift Testing inside the app and in XCUITest driving it, and other tests | `tests/` |
 
 Name top-level directories only. File paths go stale.
 
