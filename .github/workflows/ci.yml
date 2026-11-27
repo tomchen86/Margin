@@ -42,7 +42,8 @@ jobs:
           xcrun simctl bootstatus "$udid" -b
           xcrun simctl launch "$udid" com.apple.DocumentsApp
           sleep 30
-          xcrun simctl terminate "$udid" com.apple.DocumentsApp
+          # Files may have quit by itself already.
+          xcrun simctl terminate "$udid" com.apple.DocumentsApp || true
       - name: Lint, format check, typecheck, tests, requirement trace
         run: bash scripts/check.sh
       - name: Keep the test results of a failed run
