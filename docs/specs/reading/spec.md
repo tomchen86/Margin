@@ -2,7 +2,7 @@
 
 ## Purpose
 
-How the reader's own pages read like system text: the system font at the owner's text size, in light and dark mode. The reader's own pages are those of Markdown documents and of documents shown as their text. An HTML document keeps its own fonts, sizes, and colors (HTML-3.1, HTML-4.1).
+How the reader's own pages read like system text, the system font at the owner's text size in light and dark mode, and what the owner can do with a document from the `More` menu in the toolbar. The reader's own pages are those of Markdown documents and of documents shown as their text. An HTML document keeps its own fonts, sizes, and colors (HTML-3.1, HTML-4.1).
 
 ## Requirements
 
@@ -51,3 +51,17 @@ The reader SHALL show Markdown documents and documents shown as their text with 
 
 - **WHEN** the mode changes from light to dark while a document is shown
 - **THEN** the page turns dark without reopening
+
+### Requirement: READING-5.1 Find
+
+WHEN the owner chooses Find in the `More` menu, or presses ⌘F on a hardware keyboard, the reader SHALL show the system find bar, which finds what the owner types on the page.
+
+#### Scenario: from the menu
+
+- **WHEN** a document holds `Lychee` three times, and the owner chooses Find and types `Lychee`
+- **THEN** the find bar shows `1 of 3`
+
+#### Scenario: with the keyboard
+
+- **WHEN** the owner presses ⌘F and types `Mango`, which the document holds once
+- **THEN** the find bar shows `1 of 1`
