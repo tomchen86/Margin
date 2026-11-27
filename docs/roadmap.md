@@ -8,17 +8,15 @@ Reading a Markdown or HTML file on an iPhone or iPad should feel like reading it
 
 ## Now
 
-- **<Phase>**: <why now>. Milestone: <link>. Proposal: <link>
-
 ## Next
 
-- **<Phase>**: <why next>. Proposal: <link, once it has one>
+- **Daily reader**: Margin is for its owner first, so the first phase is the reader the owner uses every day; the App Store builds on it. Proposal: [2026-11-27-daily-reader](proposals/2026-11-27-daily-reader.md)
 
 ## Later
 
-- **<Phase>**: <why later, or what has to be true first>. Proposal: <link, once it has one>
+- **App Store release**: once the owner relies on the daily reader. Name check, icon, license notices, privacy policy, localization, and whether scripts in HTML files may run.
 
 ## Not doing
 
 - **Editing files**: Margin is a viewer. Editing would need a second interface and a save path that can lose data.
-- **Native Markdown rendering (`AttributedString(markdown:)`)**: it drops most of what documents use, such as tables, code highlighting, and math. Markdown becomes HTML in the WebView instead.
+- **Converting Markdown with `AttributedString(markdown:)`**: its parser reads `*`, `_`, and `\` inside formulas as Markdown, so math is broken before a math renderer sees it. markdown-it converts Markdown in the WebView instead (ADR-0002).
