@@ -1,0 +1,95 @@
+/* A Markdown document: the system font, in a column 42 times the text size wide, centered on the
+   page. Tables and code blocks wider than the column scroll sideways inside themselves; the page
+   never does. Images shrink to the column. */
+
+html {
+    -webkit-text-size-adjust: 100%;
+}
+
+body {
+    margin: 0;
+    padding: 16px 20px 32px;
+    font-family: system-ui, -apple-system, sans-serif;
+    font-size: 17px;
+    line-height: 1.5;
+}
+
+article {
+    max-width: 42em;
+    margin: 0 auto;
+    overflow-wrap: break-word;
+}
+
+code,
+kbd,
+pre {
+    font-family: ui-monospace, monospace;
+    font-size: 0.88em;
+}
+
+pre code {
+    font-size: 1em;
+}
+
+pre {
+    overflow-x: auto;
+    white-space: pre;
+    overflow-wrap: normal;
+    padding: 0.75em 1em;
+    border-radius: 6px;
+    background: rgba(118, 118, 128, 0.12);
+}
+
+kbd {
+    padding: 0.1em 0.35em;
+    border: 1px solid rgba(60, 60, 67, 0.29);
+    border-radius: 4px;
+}
+
+blockquote {
+    margin: 0 0 1em;
+    padding-left: 1em;
+    border-left: 3px solid rgba(60, 60, 67, 0.29);
+    color: rgba(60, 60, 67, 0.75);
+}
+
+table {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    padding: 0.35em 0.7em;
+    border: 1px solid rgba(60, 60, 67, 0.29);
+    overflow-wrap: normal;
+}
+
+img,
+video {
+    max-width: 100%;
+    height: auto;
+}
+
+iframe {
+    max-width: 100%;
+}
+
+hr {
+    border: none;
+    border-top: 1px solid rgba(60, 60, 67, 0.29);
+}
+
+li.task-list-item {
+    list-style: none;
+}
+
+li.task-list-item input[type="checkbox"] {
+    margin: 0 0.4em 0 -1.4em;
+}
+
+.footnotes {
+    font-size: 0.88em;
+}
