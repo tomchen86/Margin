@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Which files Margin opens, how they reach the reader, and how their text is shown. The app owns the document browser; the reader is the `MarginReader` package, which shows one document in a WebView. A document is a file of any kind DOCUMENTS-1.1 opens.
+Which files Margin opens, how they reach the reader, how their bytes become text, and how their text is shown. The app owns the document browser; the reader is the `MarginReader` package, which shows one document in a WebView. A document is a file of any kind DOCUMENTS-1.1 opens.
 
 ## Requirements
 
@@ -133,3 +133,49 @@ WHILE the page is wider than 80 characters of text, the reader SHALL wrap the te
 
 - **WHEN** the same files are shown on a page 402 points wide
 - **THEN** the line wraps within one character of the page's right margin, before 80 characters, and neither margin is wider than 24 points
+
+### Requirement: DOCUMENTS-8.1 UTF-8 first
+
+WHEN a document without a byte-order mark or an HTML charset declaration (HTML-6.1) is valid UTF-8, the reader SHALL decode it as UTF-8.
+
+#### Scenario: Chinese in UTF-8
+
+- **WHEN** a UTF-8 file holds `中文筆記 and café`
+- **THEN** the reader shows `中文筆記 and café`
+
+### Requirement: DOCUMENTS-9.1 Big5, GB18030, and Shift-JIS
+
+WHEN a document without a byte-order mark or an HTML charset declaration (HTML-6.1) is not valid UTF-8, and Big5, GB18030, or Shift-JIS decodes it without loss, the reader SHALL decode it as the one of those three that the system's detector picks, or, when the detector picks none, as the first of Big5, GB18030, and Shift-JIS that decodes it without loss.
+
+#### Scenario: old notes in each encoding
+
+- **WHEN** a file holds Traditional Chinese in Big5, Simplified Chinese in GB18030, or Japanese in Shift-JIS, though other encodings of the three also decode it
+- **THEN** the reader shows the text as written
+
+#### Scenario: a few characters
+
+- **WHEN** a file holds only `天氣` in Big5, or only `中文` in GB18030
+- **THEN** the reader shows `天氣` or `中文`
+
+#### Scenario: a Markdown note in Big5
+
+- **WHEN** `筆記.md` is Big5 and holds Traditional Chinese
+- **THEN** the reader shows its text
+
+### Requirement: DOCUMENTS-10.1 Byte-order marks
+
+WHEN a document starts with a UTF-8, UTF-16, or UTF-32 byte-order mark, the reader SHALL decode it in that encoding and byte order, and SHALL not show the mark.
+
+#### Scenario: each mark
+
+- **WHEN** files hold `中文 notes` after a UTF-8 mark, a UTF-16 mark in either byte order, or a UTF-32 mark in either byte order
+- **THEN** the reader shows `中文 notes` for each, with nothing before it
+
+### Requirement: DOCUMENTS-11.1 Nothing fits
+
+IF a document has no byte-order mark or HTML charset declaration (HTML-6.1), is not valid UTF-8, and none of Big5, GB18030, and Shift-JIS decodes it without loss, THEN the reader SHALL show it as UTF-8 with a replacement mark (`�`) where its bytes are not UTF-8, and no error.
+
+#### Scenario: Windows-1252
+
+- **WHEN** a file holds `Café au lait` in Windows-1252
+- **THEN** the reader shows `Caf� au lait`
