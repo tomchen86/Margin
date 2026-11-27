@@ -1,0 +1,10 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "Allow Access to “%@”" : {
+      "comment" : "The button at the bottom of a page whose files iOS keeps out of reach; it opens the folder picker in the named folder.",
+      "extractionState" : "manual"
+    }
+  },
+  "version" : "1.0"
+}
