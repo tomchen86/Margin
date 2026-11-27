@@ -95,3 +95,17 @@ WHEN the owner chooses View Source in the `More` menu for a Markdown or HTML doc
 - **WHEN** the source of a document holding `**Lychee**` is shown and the owner finds `**`
 - **THEN** the find bar shows `1 of 2`, finding the source's characters
 
+### Requirement: READING-7.1 Share
+
+WHEN the owner chooses Share in the `More` menu, the app SHALL open the system share sheet with the document's file itself, not a rendering of it.
+
+#### Scenario: a Markdown file
+
+- **WHEN** the owner shares `Notes.md`, a file of 24 bytes
+- **THEN** the share sheet names `Notes` and shows the file's size, 24 bytes
+
+#### Scenario: an HTML file
+
+- **WHEN** the owner shares `Page.html`
+- **THEN** the share sheet names `Page` and shows the file's size in bytes
+
