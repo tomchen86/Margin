@@ -5,8 +5,10 @@ import XCTest
 extension DocumentBrowser {
     /// Launch arguments that make the app read files as iOS lets it on a device. The simulator does
     /// not enforce the sandbox for files outside the app (ADR-0004), so with these the app can read
-    /// only the opened document, its own container, and the folders the owner granted; reading any
-    /// other file fails as iOS would make it fail.
+    /// only the opened document, its own bundle and container, and the folders the owner granted.
+    /// Reading any other file fails at the same call, with the error iOS gives
+    /// (`NSFileReadNoPermissionError`), so the code that notices a blocked file is the same with or
+    /// without the flag. The flag works only in Debug builds (`#if DEBUG`); a Release build ignores it.
     static let deviceSandbox = ["-SimulateSandbox"]
 
     /// The button that offers access to the folder called `name`.
