@@ -44,7 +44,7 @@ WHEN the owner opens a Markdown file (`.md`, `.markdown`, `.mdown`, `.mkd`, `.mk
 
 IF a file is of no kind DOCUMENTS-1.1 names, THEN the app SHALL not open it from the document browser.
 
-#### Scenario: TOML and INI
+#### Scenario: TOML, INI, and RTF
 
 - **WHEN** the owner taps `Settings.toml`, `Setup.ini`, or `Letter.rtf` in the document browser
 - **THEN** the browser shows the file as unavailable, no reader opens, and the document browser stays
@@ -76,9 +76,9 @@ WHEN the owner taps the title of an open document, the app SHALL offer no way to
 - **WHEN** the owner opens `Notes.txt` and taps its title
 - **THEN** the title still names the file, and no Rename, Move, or Duplicate appears
 
-### Requirement: DOCUMENTS-6.1 Text as written
+### Requirement: DOCUMENTS-6.2 Text as written
 
-WHEN the owner opens a document, the reader SHALL show its text exactly as written, in the system's monospaced font, with every space and blank line kept, long lines wrapped, and markup shown as typed.
+WHEN the owner opens a document other than a Markdown document, the reader SHALL show its text exactly as written, in the system's monospaced font, with every space and blank line kept, long lines wrapped, and markup shown as typed.
 
 #### Scenario: spaces and blank lines
 
@@ -90,10 +90,10 @@ WHEN the owner opens a document, the reader SHALL show its text exactly as writt
 - **WHEN** the file holds `<b>bold</b> &amp; **stars**`
 - **THEN** the reader shows exactly those characters, and nothing is bold
 
-#### Scenario: Markdown and HTML
+#### Scenario: HTML
 
-- **WHEN** `Notes.md` holds `# Title` and `*stars*`, and `Page.html` holds `<h1>Title</h1>` and a `<script>`
-- **THEN** the reader shows each file's text character for character, nothing is bold or italic, and the script does not run
+- **WHEN** `Page.html` holds `<h1>Title</h1>`, `<b>bold</b>`, and a `<script>`
+- **THEN** the reader shows the file's text character for character, nothing is bold, and the script does not run
 
 #### Scenario: JSON, YAML, and XML
 
@@ -120,13 +120,13 @@ WHEN the owner opens a document, the reader SHALL show its text exactly as writt
 - **WHEN** the file is empty
 - **THEN** the reader shows an empty page, with no error
 
-### Requirement: DOCUMENTS-7.1 Text in a readable column
+### Requirement: DOCUMENTS-7.2 Text in a readable column
 
-WHILE the page is wider than 80 characters of text, the reader SHALL wrap a document's text at 80 characters, in a column centered on the page.
+WHILE the page is wider than 80 characters of text, the reader SHALL wrap the text of a document other than a Markdown document at 80 characters, in a column centered on the page.
 
 #### Scenario: iPad in landscape
 
-- **WHEN** `Wide.txt`, `Wide.md`, or `Wide.html`, each holding a 200-character line, is shown on a page 1194 points wide
+- **WHEN** `Wide.txt` or `Wide.html`, each holding a 200-character line, is shown on a page 1194 points wide
 - **THEN** the line wraps after 80 characters, with as much space left of the column as right of it
 
 #### Scenario: iPhone in portrait
