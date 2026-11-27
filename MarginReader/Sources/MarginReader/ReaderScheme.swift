@@ -4,8 +4,8 @@ import WebKit
 
 /// The `margin://` URLs a reader's page loads (ADR-0004).
 ///
-/// - `margin://file/<absolute path>`: the document's page.
-/// - `margin://app/<name>`: a file bundled in `Web/`, such as the page's stylesheet.
+/// - `margin://file/<absolute path>`: the document's page: rendered Markdown, or the text as written.
+/// - `margin://app/<name>`: a file bundled in `Web/`, such as a stylesheet or the Markdown renderer.
 enum ReaderScheme {
     static let name = "margin"
     static let fileHost = "file"
@@ -59,8 +59,13 @@ struct ReaderSchemeHandler: URLSchemeHandler {
         case ReaderScheme.appHost:
             return try bundledFile(url.path(percentEncoded: false))
         case ReaderScheme.fileHost where ReaderScheme.isPage(url, of: documentURL):
-            let data = try readDocument(documentURL)
-            let page = TextPage.html(String(decoding: data, as: UTF8.self), title: documentURL.lastPathComponent)
+            let text = TextDecoding.string(from: try readDocument(documentURL))
+            let title = documentURL.lastPathComponent
+            let page =
+                switch DocumentKind(documentURL: documentURL) {
+                case .markdown: MarkdownPage.html(text, title: title)
+                case .text: TextPage.html(text, title: title)
+                }
             return (Data(page.utf8), "text/html")
         default:
             throw URLError(.fileDoesNotExist)
