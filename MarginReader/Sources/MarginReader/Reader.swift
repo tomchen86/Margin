@@ -17,8 +17,10 @@ public final class Reader {
         if let scheme = URLScheme(ReaderScheme.name) {
             configuration.urlSchemeHandlers[scheme] = ReaderSchemeHandler(documentURL: documentURL)
         }
-        // A document is shown as its text, so its page has nothing to run.
-        configuration.defaultNavigationPreferences.allowsContentJavaScript = false
+        // A Markdown page runs the app's renderer, and its policy lets nothing else run; a page
+        // that shows a document's text has nothing to run.
+        configuration.defaultNavigationPreferences.allowsContentJavaScript =
+            DocumentKind(documentURL: documentURL) == .markdown
         page = WebPage(configuration: configuration)
     }
 

@@ -20,5 +20,6 @@ MARGIN_DESTINATION="platform=iOS Simulator,name=iPhone 17 Pro" bash scripts/chec
 | Where it is going | `docs/roadmap.md` |
 | Plan for each phase | `docs/proposals/` |
 | Plans, progress, discussion | GitHub Issues and the Project board |
+| Licenses of bundled libraries | `THIRD_PARTY_NOTICES.md` |
 | Rules for AI agents | `AGENTS.md` |
 | Step-by-step procedures for AI agents | `skills/` |
