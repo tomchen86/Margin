@@ -83,6 +83,16 @@ struct MarkdownTests {
         #expect(paragraphs == ["one two", "three\nfour\nfive"])
     }
 
+    @Test("[MARKDOWN-1.1] reads Windows line endings as line endings")
+    func readsWindowsLineEndings() async throws {
+        let shown = try await ShownDocument.show("# Title\r\n\r\nline one\r\nline two\r\n", named: "CRLF.md")
+        defer { shown.close() }
+        let page = try await shown.json(
+            [String].self,
+            "return [document.querySelector('h1')?.textContent ?? '', document.querySelector('p')?.innerText ?? '']")
+        #expect(page == ["Title", "line one line two"])
+    }
+
     @Test("[MARKDOWN-1.1] shows quotes, dashes, and dots as typed")
     func keepsPunctuation() async throws {
         let shown = try await ShownDocument.show(#""double" 'single' -- ... (c)"#, named: "Punctuation.md")
@@ -484,8 +494,85 @@ struct MarkdownTests {
             try await shown.policyRefuses("link", ["rel": "stylesheet", "href": "https://margin.invalid/style.css"]))
         #expect(
             try await shown.policyRefuses(
-                running: "new FontFace('Probe', 'url(https://margin.invalid/font.woff2)').load().catch(() => {});"))
-        #expect(try await shown.policyRefuses(running: "fetch('https://margin.invalid/data').catch(() => {});"))
+                running: "new FontFace('Probe', 'url(https://margin.invalid/font.woff2)').load().catch(() => {});",
+                under: "font-src"))
+        #expect(
+            try await shown.policyRefuses(
+                running: "fetch('https://margin.invalid/data').catch(() => {});", under: "connect-src"))
+    }
+
+    @Test("[MARKDOWN-14.1] applies the document's own style elements and attributes, not stylesheets from the web")
+    func appliesTheDocumentsOwnStyles() async throws {
+        let markdown = """
+            <style>.note { color: rgb(0, 128, 0); } table { font-size: 12px; }</style>
+
+            <p class="note">Green note.</p>
+
+            Plain words in <span style="color: rgb(255, 0, 0)">red</span>.
+
+            | Small |
+            |-------|
+            | cell |
+            """
+        let shown = try await ShownDocument.show(markdown, named: "Styled.md")
+        defer { shown.close() }
+        struct Page: Decodable {
+            let note, red, tableSize: String?
+        }
+        let page = try await shown.json(
+            Page.self,
+            """
+            const note = document.querySelector("p.note");
+            const red = [...document.querySelectorAll("span")].find(span => span.textContent === "red");
+            const table = document.querySelector("table");
+            return { note: note ? getComputedStyle(note).color : null, red: red ? getComputedStyle(red).color : null,
+                     tableSize: table ? getComputedStyle(table).fontSize : null };
+            """)
+        #expect(page.note == "rgb(0, 128, 0)", "the document's <style> applies")
+        #expect(page.tableSize == "12px", "the document's <style> applies to Markdown's own elements too")
+        #expect(page.red == "rgb(255, 0, 0)", "a style attribute applies")
+        #expect(
+            try await shown.policyRefuses("link", ["rel": "stylesheet", "href": "https://margin.invalid/theme.css"]))
+    }
+
+    @Test("[MARKDOWN-15.1] stays on the document despite its meta refresh and base address")
+    func staysOnTheDocument() async throws {
+        let markdown = """
+            <meta http-equiv="refresh" content="0; url=?moved">
+            <base href="https://margin.invalid/">
+
+            Still here.
+
+            ![photo](images/photo.png)
+            """
+        let shown = try await ShownDocument.show(
+            files: ["Moves.md": Data(markdown.utf8), "images/photo.png": Data()], opening: "Moves.md")
+        defer { shown.close() }
+        let opened = try #require(shown.reader.page.url)
+        try await Task.sleep(for: .seconds(2))
+        #expect(
+            shown.reader.page.url == opened,
+            "the refresh did not move the reader: \(String(describing: shown.reader.page.url))")
+        struct Page: Decodable {
+            let location, base, image, paragraph: String?
+        }
+        let page = try await shown.json(
+            Page.self,
+            """
+            return { location: location.href, base: document.baseURI,
+                     image: document.querySelector('img[alt="photo"]')?.src ?? null,
+                     paragraph: document.querySelector("p")?.textContent ?? null };
+            """)
+        let document = try #require(page.location)
+        #expect(
+            document.hasPrefix("margin://file/") && document.hasSuffix("/Moves.md"),
+            "still on the document: \(document)")
+        #expect(page.paragraph == "Still here.", "the reader shows the document")
+        #expect(page.base == document, "links resolve against the document")
+        let image = try #require(page.image)
+        #expect(
+            image == document.replacingOccurrences(of: "Moves.md", with: "images/photo.png"),
+            "the image resolves next to the document: \(image)")
     }
 
     // MARK: Layout
