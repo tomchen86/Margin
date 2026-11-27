@@ -136,7 +136,7 @@ WHILE the page is wider than 80 characters of text, the reader SHALL wrap a docu
 
 ### Requirement: DOCUMENTS-8.1 UTF-8 first
 
-WHEN a document without a byte-order mark or a declared charset (HTML-6.1) is valid UTF-8, the reader SHALL decode it as UTF-8.
+WHEN a document without a byte-order mark or an HTML charset declaration (HTML-6.1) is valid UTF-8, the reader SHALL decode it as UTF-8.
 
 #### Scenario: Chinese in UTF-8
 
@@ -145,7 +145,7 @@ WHEN a document without a byte-order mark or a declared charset (HTML-6.1) is va
 
 ### Requirement: DOCUMENTS-9.1 Big5, GB18030, and Shift-JIS
 
-WHEN a document without a byte-order mark or a declared charset is not valid UTF-8, and Big5, GB18030, or Shift-JIS decodes it without loss, the reader SHALL decode it as the one of those three that the system's detector picks, or, when the detector picks none, as the first of Big5, GB18030, and Shift-JIS that decodes it without loss.
+WHEN a document without a byte-order mark or an HTML charset declaration (HTML-6.1) is not valid UTF-8, and Big5, GB18030, or Shift-JIS decodes it without loss, the reader SHALL decode it as the one of those three that the system's detector picks, or, when the detector picks none, as the first of Big5, GB18030, and Shift-JIS that decodes it without loss.
 
 #### Scenario: old notes in each encoding
 
@@ -173,7 +173,7 @@ WHEN a document starts with a UTF-8, UTF-16, or UTF-32 byte-order mark, the read
 
 ### Requirement: DOCUMENTS-11.1 Nothing fits
 
-IF a document has no byte-order mark or declared charset, is not valid UTF-8, and none of Big5, GB18030, and Shift-JIS decodes it without loss, THEN the reader SHALL show it as UTF-8 with a replacement mark (`�`) where its bytes are not UTF-8, and no error.
+IF a document has no byte-order mark or HTML charset declaration (HTML-6.1), is not valid UTF-8, and none of Big5, GB18030, and Shift-JIS decodes it without loss, THEN the reader SHALL show it as UTF-8 with a replacement mark (`�`) where its bytes are not UTF-8, and no error.
 
 #### Scenario: Windows-1252
 
