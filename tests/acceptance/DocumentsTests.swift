@@ -8,12 +8,16 @@ import WebKit
 @MainActor
 @Suite(.serialized)
 struct DocumentsTests {
-    @Test("[DOCUMENTS-3.1] tells iOS it views Markdown, HTML, and plain text, in place")
+    @Test("[DOCUMENTS-3.1] tells iOS it views every kind of document, in place")
     func opensInPlace() throws {
         let info = try #require(Bundle.main.infoDictionary)
         #expect(info["LSSupportsOpeningDocumentsInPlace"] as? Bool == true)
         let declared = try #require(info["CFBundleDocumentTypes"] as? [[String: Any]])
-        for type in ["net.daringfireball.markdown", "public.html", "public.plain-text"] {
+        let types = [
+            "net.daringfireball.markdown", "public.html", "public.json", "public.yaml", "public.xml",
+            "public.plain-text",
+        ]
+        for type in types {
             let entry = declared.first { ($0["LSItemContentTypes"] as? [String])?.contains(type) == true }
             #expect(entry?["CFBundleTypeRole"] as? String == "Viewer", "\(type) is declared with the Viewer role")
         }
@@ -57,6 +61,20 @@ struct DocumentsTests {
         defer { shown.close() }
         #expect(try await shown.visibleText() == text)
         #expect(try await shown.boldOrItalicText() == [], "nothing is bold or italic")
+    }
+
+    @Test(
+        "[DOCUMENTS-6.1] shows JSON, YAML, and XML as typed",
+        arguments: [
+            "Data.json": "{\n  \"fruit\": \"Nectarine\",\n  \"count\": 3\n}",
+            "Config.yaml": "fruit: Orange\nlist:\n  - one\n  - two",
+            "Feed.xml":
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<feed>\n  <entry id=\"1\">Quince &amp; pear</entry>\n</feed>",
+        ])
+    func showsDataAsTyped(name: String, text: String) async throws {
+        let shown = try await ShownDocument.show(text, named: name)
+        defer { shown.close() }
+        #expect(try await shown.visibleText() == text)
     }
 
     @Test("[DOCUMENTS-6.1] shows source code as typed")

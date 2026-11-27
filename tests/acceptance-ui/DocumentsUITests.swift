@@ -33,14 +33,28 @@ final class DocumentsUITests: XCTestCase {
         ])
     }
 
+    func test_DOCUMENTS_1_1_opensJSONYAMLAndXML() throws {
+        try opensEach([
+            "Nectarine.json": #"{"fruit": "Nectarine orchard"}"#,
+            "Orange.yaml": "fruit: Orange orchard",
+            "Peach.yml": "fruit: Peach orchard",
+            "Quince.xml": #"<?xml version="1.0"?><fruit>Quince orchard</fruit>"#,
+        ])
+    }
+
     func test_DOCUMENTS_2_1_leavesOtherFilesClosed() throws {
-        let browser = try DocumentBrowser.launch(with: ["Data.json": #"{"fruit": "Nectarine orchard"}"#])
-        let json = browser.cell("Data")
-        XCTAssertTrue(json.waitForExistence(timeout: 10))
-        XCTAssertFalse(json.isEnabled, "the browser does not offer Data.json")
-        json.tap()
-        XCTAssertFalse(browser.readerShows("Nectarine", timeout: 3), "no reader opens")
-        XCTAssertTrue(json.exists, "the document browser stays")
+        let browser = try DocumentBrowser.launch(with: [
+            "Settings.toml": #"fruit = "Raspberry orchard""#,
+            "Setup.ini": "[fruit]\nname = Strawberry orchard",
+        ])
+        for name in ["Settings", "Setup"] {
+            let cell = browser.cell(name)
+            XCTAssertTrue(cell.waitForExistence(timeout: 10))
+            XCTAssertFalse(cell.isEnabled, "the browser shows \(name) as unavailable")
+        }
+        browser.cell("Settings").tap()
+        XCTAssertFalse(browser.readerShows("orchard", timeout: 3), "no reader opens")
+        XCTAssertTrue(browser.cell("Setup").exists, "the document browser stays")
     }
 
     func test_DOCUMENTS_4_1_writesNothingToTheFolder() throws {

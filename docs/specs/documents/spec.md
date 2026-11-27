@@ -2,13 +2,13 @@
 
 ## Purpose
 
-Which files Margin opens, how they reach the reader, and how plain text is shown. The app owns the document browser; the reader is the `MarginReader` package, which shows one document in a WebView.
+Which files Margin opens, how they reach the reader, and how their text is shown. The app owns the document browser; the reader is the `MarginReader` package, which shows one document in a WebView. A document is a file of any kind DOCUMENTS-1.1 opens.
 
 ## Requirements
 
-### Requirement: DOCUMENTS-1.1 Opens Markdown, HTML, and plain text
+### Requirement: DOCUMENTS-1.1 Opens Markdown, HTML, and text files
 
-WHEN the owner opens a Markdown file (`.md`, `.markdown`, `.mdown`, `.mkd`, `.mkdn`), an HTML file (`.html`, `.htm`), or a file the system counts as plain text (such as `.txt`, source code, and logs) from the document browser, the app SHALL show it in the reader.
+WHEN the owner opens a Markdown file (`.md`, `.markdown`, `.mdown`, `.mkd`, `.mkdn`), an HTML file (`.html`, `.htm`), a JSON, YAML, or XML file (`.json`, `.yaml`, `.yml`, `.xml`), or a file the system counts as plain text (such as `.txt`, source code, and logs) from the document browser, the app SHALL show it in the reader.
 
 #### Scenario: every Markdown extension
 
@@ -30,23 +30,28 @@ WHEN the owner opens a Markdown file (`.md`, `.markdown`, `.mdown`, `.mkd`, `.mk
 - **WHEN** the owner opens `Notes.txt`, `Main.swift`, or `Build.log`
 - **THEN** the reader shows the words in the file
 
+#### Scenario: JSON, YAML, and XML
+
+- **WHEN** the owner opens `Data.json`, `Config.yaml`, `Config.yml`, or `Feed.xml`
+- **THEN** the reader shows the words in the file
+
 ### Requirement: DOCUMENTS-2.1 Other files stay closed
 
-IF a file is neither Markdown, HTML, nor plain text, THEN the app SHALL not open it from the document browser.
+IF a file is of no kind DOCUMENTS-1.1 names, THEN the app SHALL not open it from the document browser.
 
-#### Scenario: JSON is not plain text to the system
+#### Scenario: TOML and INI
 
-- **WHEN** the owner taps `Data.json` in the document browser
-- **THEN** no reader opens and the document browser stays
+- **WHEN** the owner taps `Settings.toml` or `Setup.ini` in the document browser
+- **THEN** the browser shows the file as unavailable, no reader opens, and the document browser stays
 
 ### Requirement: DOCUMENTS-3.1 Declared as an in-place viewer
 
-The app SHALL declare to iOS that it views Markdown, HTML, and plain-text files and opens them in place, so that other apps can hand it such a file without a copy being made.
+The app SHALL declare to iOS that it views every kind of document DOCUMENTS-1.1 names and opens documents in place, so that other apps can hand it such a file without a copy being made.
 
 #### Scenario: what iOS is told
 
 - **WHEN** iOS reads the app's declarations
-- **THEN** they name Markdown (`net.daringfireball.markdown`), HTML (`public.html`), and plain text (`public.plain-text`) with the Viewer role, and say that documents open in place
+- **THEN** they name Markdown (`net.daringfireball.markdown`), HTML (`public.html`), JSON (`public.json`), YAML (`public.yaml`), XML (`public.xml`), and plain text (`public.plain-text`) with the Viewer role, and say that documents open in place
 
 ### Requirement: DOCUMENTS-4.1 Never writes
 
@@ -68,7 +73,7 @@ WHEN the owner taps the title of an open document, the app SHALL offer no way to
 
 ### Requirement: DOCUMENTS-6.1 Text as written
 
-WHEN the owner opens a plain-text, Markdown, or HTML file, the reader SHALL show its text exactly as written, in the system's monospaced font, with every space and blank line kept, long lines wrapped, and markup shown as typed.
+WHEN the owner opens a document, the reader SHALL show its text exactly as written, in the system's monospaced font, with every space and blank line kept, long lines wrapped, and markup shown as typed.
 
 #### Scenario: spaces and blank lines
 
@@ -84,6 +89,11 @@ WHEN the owner opens a plain-text, Markdown, or HTML file, the reader SHALL show
 
 - **WHEN** `Notes.md` holds `# Title` and `*stars*`, and `Page.html` holds `<h1>Title</h1>` and a `<script>`
 - **THEN** the reader shows each file's text character for character, nothing is bold or italic, and the script does not run
+
+#### Scenario: JSON, YAML, and XML
+
+- **WHEN** `Data.json`, `Config.yaml`, and `Feed.xml` hold indented data, and `Feed.xml` starts with `<?xml version="1.0"?>`
+- **THEN** the reader shows each file's text character for character, not as a tree or with its markup hidden
 
 #### Scenario: source code
 
@@ -107,7 +117,7 @@ WHEN the owner opens a plain-text, Markdown, or HTML file, the reader SHALL show
 
 ### Requirement: DOCUMENTS-7.1 Text in a readable column
 
-WHILE the page is wider than 80 characters of text, the reader SHALL wrap the text of a plain-text, Markdown, or HTML file at 80 characters, in a column centered on the page.
+WHILE the page is wider than 80 characters of text, the reader SHALL wrap a document's text at 80 characters, in a column centered on the page.
 
 #### Scenario: iPad in landscape
 
