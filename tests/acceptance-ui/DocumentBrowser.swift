@@ -50,10 +50,27 @@ struct DocumentBrowser {
     }
 
     /// Taps the file whose name starts with `name`.
+    ///
+    /// XCUITest waits for Margin to be idle before a tap, but not for the system document browser,
+    /// which runs in a process of its own. On a slow runner the browser can drop a tap that arrives
+    /// before it handles taps. So while the browser still offers the file and the reader shows
+    /// nothing, the file is tapped again: up to three taps, about 10 s apart.
     func open(_ name: String, file: StaticString = #filePath, line: UInt = #line) {
         let cell = cell(name)
         XCTAssertTrue(cell.waitForExistence(timeout: 30), "the browser lists \(name)", file: file, line: line)
-        cell.tap()
+        // The reader's Back button is no sign the file opened: it sits behind the launch card
+        // while the browser shows.
+        let readerText = app.webViews.staticTexts.firstMatch
+        for tap in 1...3 {
+            cell.tap()
+            guard tap < 3 else { return }
+            let deadline = Date.now.addingTimeInterval(10)
+            repeat {
+                let browserOffersFile = cell.exists && cell.isHittable
+                if !browserOffersFile || (readerText.exists && readerText.isHittable) { return }
+                Thread.sleep(forTimeInterval: 0.5)
+            } while Date.now < deadline
+        }
     }
 
     /// Whether the reader shows `text` within `timeout` seconds. The default allows for a slow CI
