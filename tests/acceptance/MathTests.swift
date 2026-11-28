@@ -23,7 +23,8 @@ struct MathTests {
             [Bool].self,
             """
             await document.fonts.ready;
-            return ["KaTeX_Main", "KaTeX_Math"].map(family => document.fonts.check(`16px ${family}`));
+            return ["KaTeX_Main", "KaTeX_Math"].map(family => [...document.fonts].some(face =>
+              face.family.replace(/["']/g, "") === family && face.status === "loaded"));
             """)
         #expect(fonts == [true, true], "the app's math fonts are loaded")
     }
