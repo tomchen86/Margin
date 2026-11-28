@@ -31,10 +31,10 @@ public final class Reader {
                 documentURL: documentURL, grants: grants,
                 outOfReach: { file in Task { @MainActor in outOfReach.add(file) } })
         }
-        // A Markdown page runs the app's renderer, and its policy lets nothing else run; a page
-        // that shows a document's text has nothing to run.
+        // A Markdown page runs the app's renderer, and its policy lets nothing else run; an HTML
+        // page runs its own scripts; a page that shows a document's text has nothing to run.
         configuration.defaultNavigationPreferences.allowsContentJavaScript =
-            DocumentKind(documentURL: documentURL) == .markdown
+            DocumentKind(documentURL: documentURL) != .text
         page = WebPage(configuration: configuration)
     }
 
