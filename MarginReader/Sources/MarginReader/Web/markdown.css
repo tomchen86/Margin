@@ -110,3 +110,10 @@ li.task-list-item input[type="checkbox"] {
 .footnotes {
     font-size: 0.88em;
 }
+
+/* A display formula wider than the column scrolls sideways inside itself. */
+.katex-display {
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 0.25em 0;
+}

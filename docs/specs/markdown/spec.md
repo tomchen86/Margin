@@ -225,3 +225,44 @@ The reader SHALL give every heading in a Markdown document an id made from its t
 - **WHEN** the document holds `<h2 id="custom">Custom heading</h2>` and `<h3>Raw heading</h3>`
 - **THEN** the first keeps its id `custom`, and the second gets `raw-heading`
 
+### Requirement: MARKDOWN-17.1 Math
+
+WHEN a Markdown document contains a formula between `$` and `$`, or between `$$` and `$$`, the reader SHALL typeset it with KaTeX and the app's own math fonts: inline for `$…$`, and as a display formula on its own line for `$$…$$`, inside a sentence too, with Markdown leaving the formula's characters as typed.
+
+#### Scenario: inline and display
+
+- **WHEN** a paragraph holds `$a*b*c$` and `$\{x\}$`, and a block holds `$$\sum_{i=1}^n i$$`
+- **THEN** both inline formulas and the display formula are typeset, the `*` and `\{` reach the formulas as typed, and nothing is in emphasis
+
+#### Scenario: display math inside a sentence
+
+- **WHEN** a sentence reads `The area is $$\pi r^2$$ for a circle.`
+- **THEN** the formula is typeset as display math on a line of its own
+
+### Requirement: MARKDOWN-18.1 Invalid formulas
+
+IF a formula is invalid, THEN the reader SHALL show that formula's source in red, where the formula stands, and typeset the rest of the page.
+
+#### Scenario: an unclosed brace
+
+- **WHEN** a paragraph holds `$\frac{a$`, then `$x^2$`, then `after`
+- **THEN** `\frac{a` shows in red, `$x^2$` is typeset, and `after` follows
+
+### Requirement: MARKDOWN-19.1 Dollars as text
+
+WHEN an opening `$` is followed by a space, a closing `$` follows a space or comes before a digit, a `$` is escaped as `\$`, or the dollars are in code, the reader SHALL show the dollar signs as text, not a formula, and SHALL treat `\(…\)` and `\[…\]` as Markdown text.
+
+#### Scenario: prices and escapes
+
+- **WHEN** a document holds `$5 and $10`, `$ x$`, `$x $`, `\$x\$`, `` `$y$` ``, `\(z\)`, and `$x^2$`
+- **THEN** it shows `$5 and $10`, `$ x$`, `$x $`, `$x$`, `$y$` in code, and `(z)` as text, and typesets only `$x^2$`
+
+### Requirement: MARKDOWN-20.1 Wide formulas
+
+WHEN a display formula is wider than the column, the reader SHALL let it scroll sideways inside itself while the page does not.
+
+#### Scenario: a long sum
+
+- **WHEN** a display formula adds sixty terms
+- **THEN** the formula scrolls sideways, and the page does not
+

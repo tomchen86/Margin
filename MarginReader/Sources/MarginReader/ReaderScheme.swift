@@ -115,11 +115,14 @@ struct ReaderSchemeHandler: URLSchemeHandler {
         UTType(filenameExtension: file.pathExtension)?.preferredMIMEType ?? "application/octet-stream"
     }
 
-    /// A file directly in `Web/`; any other path, such as one with `..` or a subfolder, is not found.
+    /// A file directly in `Web/`, or in `Web/fonts/`, where KaTeX's stylesheet looks for its fonts;
+    /// any other path, such as one with `..` or another folder, is not found.
     private static func bundledFile(_ path: String) throws -> Resource {
-        let name = String(path.dropFirst())
-        guard path.hasPrefix("/"), !name.isEmpty, !name.contains("/"), name != "..",
-            let file = Bundle.module.url(forResource: name, withExtension: nil, subdirectory: "Web")
+        let components = path.split(separator: "/", omittingEmptySubsequences: false).dropFirst()
+        let folder = components.count == 2 && components.first == "fonts" ? "Web/fonts" : "Web"
+        guard path.hasPrefix("/"), components.count == 1 || folder == "Web/fonts",
+            let name = components.last.map(String.init), !name.isEmpty, name != ".", name != "..",
+            let file = Bundle.module.url(forResource: name, withExtension: nil, subdirectory: folder)
         else { throw URLError(.fileDoesNotExist) }
         let mimeType = mimeType(of: file)
         // The reader's own stylesheets and scripts are UTF-8.
