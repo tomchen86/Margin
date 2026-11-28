@@ -17,21 +17,30 @@ import Testing
     }
 
     @Test func servesTheBundledStylesheet() throws {
-        let (data, mimeType) = try ReaderSchemeHandler.contents(
+        let resource = try ReaderSchemeHandler.contents(
             of: ReaderScheme.appURL("text.css"), documentURL: document, grants: grants)
-        #expect(mimeType == "text/css")
-        #expect(String(decoding: data, as: UTF8.self).contains("pre.text"))
+        #expect(resource.mimeType == "text/css")
+        #expect(resource.textEncoding == "utf-8")
+        #expect(String(decoding: resource.data, as: UTF8.self).contains("pre.text"))
     }
 
     @Test(arguments: [
         "margin://app/", "margin://app/missing.css", "margin://app/Web/text.css", "margin://app/../Info.plist",
-        "margin://app/%2E%2E/Info.plist", "margin://file/tmp/Other.md", "margin://elsewhere/text.css",
+        "margin://app/%2E%2E/Info.plist", "margin://app/fonts/", "margin://app/fonts/../text.css",
+        "margin://app/fonts/x/KaTeX_Main-Regular.woff2", "margin://file/tmp/Other.md", "margin://elsewhere/text.css",
     ])
     func refusesWhatItCannotServe(_ request: String) throws {
         let url = try #require(URL(string: request))
         #expect(throws: (any Error).self) {
             try ReaderSchemeHandler.contents(of: url, documentURL: document, grants: grants)
         }
+    }
+
+    @Test func servesKaTeXsFontsFromTheirFolder() throws {
+        let font = try ReaderSchemeHandler.contents(
+            of: ReaderScheme.appURL("fonts/KaTeX_Main-Regular.woff2"), documentURL: document, grants: grants)
+        #expect(font.data.starts(with: Data("wOF2".utf8)))
+        #expect(font.textEncoding == nil, "a font has no text encoding")
     }
 
     @Test func servesAFileNextToTheDocumentAsItIs() throws {
@@ -41,10 +50,11 @@ import Testing
         let image = folder.appending(path: "images/my photo.svg")
         try Data("<svg xmlns='http://www.w3.org/2000/svg'/>".utf8).write(to: image)
         let request = try #require(URL(string: ReaderScheme.fileURL + image.path(percentEncoded: true) + "?raw=true"))
-        let (data, mimeType) = try ReaderSchemeHandler.contents(
+        let resource = try ReaderSchemeHandler.contents(
             of: request, documentURL: folder.appending(path: "Notes.md"), grants: grants)
-        #expect(data == (try Data(contentsOf: image)))
-        #expect(mimeType == "image/svg+xml")
+        #expect(resource.data == (try Data(contentsOf: image)))
+        #expect(resource.mimeType == "image/svg+xml")
+        #expect(resource.textEncoding == nil, "WebKit finds a file's encoding itself")
     }
 
     @Test func escapesEverythingHTMLWouldReadAsMarkup() {
