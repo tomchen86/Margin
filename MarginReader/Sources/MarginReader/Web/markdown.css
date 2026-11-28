@@ -48,6 +48,8 @@ pre code {
     font-size: 1em;
 }
 
+/* A code block has its own background, light or dark with the mode, under the highlight theme's
+   colors; the block, not the code inside it, scrolls sideways. */
 pre {
     overflow-x: auto;
     white-space: pre;
@@ -55,6 +57,13 @@ pre {
     padding: 0.75em 1em;
     border-radius: 6px;
     background: var(--fill);
+}
+
+pre code.hljs {
+    display: inline;
+    padding: 0;
+    overflow-x: visible;
+    background: transparent;
 }
 
 kbd {

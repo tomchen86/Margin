@@ -1,6 +1,6 @@
 // Renders the page's Markdown source into its <article>. With the bundled markdown-it,
-// markdown-it-footnote, and KaTeX, this is the only script the page's Content Security Policy
-// lets run.
+// markdown-it-footnote, KaTeX, and highlight.js, this is the only script the page's Content
+// Security Policy lets run.
 (() => {
   "use strict";
 
@@ -9,7 +9,7 @@
 
   try {
     const { frontMatter, body } = splitFrontMatter(source);
-    const md = window.markdownit({ html: true, linkify: true, typographer: false, breaks: false });
+    const md = window.markdownit({ html: true, linkify: true, typographer: false, breaks: false, highlight });
     md.use(window.markdownitFootnote);
     md.use(math);
     linkOnlyAddressesWithSchemeOrWWW(md.linkify);
@@ -21,6 +21,7 @@
     const template = document.createElement("template");
     template.innerHTML = md.render(body);
     removeWhatThePolicyCannotStop(template.content);
+    styleCodeBlocks(template.content);
     addHeadingAnchors(template.content);
     if (frontMatter !== null) template.content.prepend(preformatted(frontMatter, "front-matter"));
     article.replaceChildren(template.content);
@@ -137,6 +138,24 @@
     token.map = [startLine, last + 1];
     state.line = last + 1;
     return true;
+  }
+
+  // A fenced block that names a language highlight.js's common build knows, by name or alias, is
+  // colored; any other block is left to markdown-it, which shows its text escaped. Nothing is
+  // guessed.
+  function highlight(code, language) {
+    if (!language || !window.hljs.getLanguage(language)) return "";
+    try {
+      return window.hljs.highlight(code, { language, ignoreIllegals: true }).value;
+    } catch {
+      return "";
+    }
+  }
+
+  // Every code block takes the highlight theme's text color, so a block that isn't colored still
+  // reads like one that is.
+  function styleCodeBlocks(root) {
+    for (const code of root.querySelectorAll("pre > code")) code.classList.add("hljs");
   }
 
   // A list item whose text starts with "[ ] ", "[x] ", or "[X] " starts with a disabled checkbox.
