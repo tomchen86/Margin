@@ -10,7 +10,12 @@ import Testing
         #expect(DocumentKind(documentURL: URL(filePath: "/tmp/\(name)")) == .markdown)
     }
 
-    @Test(arguments: ["a.txt", "a.html", "a.json", "a.md.txt", "md", "a.mdx"])
+    @Test(arguments: ["a.html", "a.htm", "Index.HTML"])
+    func htmlExtensionsGetTheHTMLPage(_ name: String) {
+        #expect(DocumentKind(documentURL: URL(filePath: "/tmp/\(name)")) == .html)
+    }
+
+    @Test(arguments: ["a.txt", "a.xhtml", "a.json", "a.md.txt", "md", "a.mdx"])
     func otherFilesGetTheTextPage(_ name: String) {
         #expect(DocumentKind(documentURL: URL(filePath: "/tmp/\(name)")) == .text)
     }
