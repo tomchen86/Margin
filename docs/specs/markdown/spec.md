@@ -173,14 +173,19 @@ WHEN a Markdown document shows an image wider than the column, the reader SHALL 
 - **WHEN** the document shows a 2000 × 100 image on a page 402 points wide
 - **THEN** the image is as wide as the column and a twentieth as tall
 
-### Requirement: MARKDOWN-14.1 The document's own styles
+### Requirement: MARKDOWN-14.2 The document's own styles
 
-WHEN a Markdown document contains a `<style>` element or a `style` attribute, the reader SHALL apply it, and SHALL not load a stylesheet from the web.
+WHEN a Markdown document contains a `<style>` element or a `style` attribute, the reader SHALL apply it, and SHALL load no stylesheet, neither from the web nor from a file next to the document.
 
 #### Scenario: a style element, an attribute, and a web stylesheet
 
 - **WHEN** the document holds `<style>.note { color: green } table { font-size: 12px }</style>`, a paragraph of class `note`, a table, `<span style="color: red">`, and `<link rel="stylesheet" href="https://…">`
 - **THEN** the note is green, the table's text is 12 points, the span is red, and the web stylesheet does not load
+
+#### Scenario: a stylesheet next to the document
+
+- **WHEN** the document holds `<link rel="stylesheet" href="style.css">`, and `style.css` next to it colors a paragraph blue
+- **THEN** the paragraph is not blue: the stylesheet does not load
 
 ### Requirement: MARKDOWN-15.1 The reader stays on the document
 
@@ -190,6 +195,35 @@ IF a Markdown document contains a `<meta>` or `<base>` element, THEN the reader 
 
 - **WHEN** the document holds `<meta http-equiv="refresh" content="0; url=?moved">`, `<base href="https://margin.invalid/">`, and `![photo](images/photo.png)`
 - **THEN** the reader stays on the document, and the image resolves to `images/photo.png` next to the document
+
+### Requirement: MARKDOWN-16.1 Heading anchors
+
+The reader SHALL give every heading in a Markdown document an id made from its text by GitHub's rule: lowercase, with punctuation and symbols dropped except `-` and `_`, each space turned into `-`, and a repeated id followed by `-1`, `-2`, and so on in order; a heading whose own HTML gives it an id keeps that id.
+
+#### Scenario: punctuation and spaces
+
+- **WHEN** headings read `Hello World`, `Foo & Bar`, `What's new?`, `C++ and C#`, `snake_case and kebab-case`, and `1. Introduction`
+- **THEN** their ids are `hello-world`, `foo--bar`, `whats-new`, `c-and-c`, `snake_case-and-kebab-case`, and `1-introduction`
+
+#### Scenario: other scripts
+
+- **WHEN** headings read `Ünïcödé Café`, `中文標題`, and `標題：說明`
+- **THEN** their ids are `ünïcödé-café`, `中文標題`, and `標題說明`
+
+#### Scenario: formatting in a heading
+
+- **WHEN** headings read ``Use `code` here`` and `Hello *world*`
+- **THEN** their ids are `use-code-here` and `hello-world-1`, the second repeating an earlier `hello-world`
+
+#### Scenario: repeats, setext headings, and quotes
+
+- **WHEN** three headings read `Notes`, a setext heading reads `Setext Heading`, and a heading inside a block quote reads `Quoted`
+- **THEN** their ids are `notes`, `notes-1`, `notes-2`, `setext-heading`, and `quoted`
+
+#### Scenario: HTML headings
+
+- **WHEN** the document holds `<h2 id="custom">Custom heading</h2>` and `<h3>Raw heading</h3>`
+- **THEN** the first keeps its id `custom`, and the second gets `raw-heading`
 
 ### Requirement: MARKDOWN-17.1 Math
 
