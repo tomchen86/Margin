@@ -25,13 +25,20 @@ import Testing
 
     @Test(arguments: [
         "margin://app/", "margin://app/missing.css", "margin://app/Web/text.css", "margin://app/../Info.plist",
-        "margin://app/%2E%2E/Info.plist", "margin://file/tmp/Other.md", "margin://elsewhere/text.css",
+        "margin://app/%2E%2E/Info.plist", "margin://app/fonts/", "margin://app/fonts/../text.css",
+        "margin://app/fonts/x/KaTeX_Main-Regular.woff2", "margin://file/tmp/Other.md", "margin://elsewhere/text.css",
     ])
     func refusesWhatItCannotServe(_ request: String) throws {
         let url = try #require(URL(string: request))
         #expect(throws: (any Error).self) {
             try ReaderSchemeHandler.contents(of: url, documentURL: document, grants: grants)
         }
+    }
+
+    @Test func servesKaTeXsFontsFromTheirFolder() throws {
+        let (data, _) = try ReaderSchemeHandler.contents(
+            of: ReaderScheme.appURL("fonts/KaTeX_Main-Regular.woff2"), documentURL: document, grants: grants)
+        #expect(data.starts(with: Data("wOF2".utf8)))
     }
 
     @Test func servesAFileNextToTheDocumentAsItIs() throws {
