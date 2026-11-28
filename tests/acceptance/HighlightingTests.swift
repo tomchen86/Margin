@@ -94,16 +94,31 @@ struct HighlightingTests {
             const pre = document.querySelector("pre");
             if (!pre) return { text: "", token: null, plain: null, contrast: 0 };
             const channels = color => (color.match(/[\\d.]+/g) ?? []).map(Number);
-            const luminance = color => {
-              const [r, g, b] = channels(color).map(v => { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; });
+            const rgba = color => { const [r = 0, g = 0, b = 0, a = 1] = channels(color); return [r, g, b, a]; };
+            const luminance = ([red, green, blue]) => {
+              const [r, g, b] = [red, green, blue].map(v => { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; });
               return 0.2126 * r + 0.7152 * g + 0.0722 * b;
             };
-            let background = null;
+            // The background as painted: every fill from <code> up to the first opaque one, or the
+            // page's Canvas color, composited from the bottom up.
+            const layers = [];
             for (let e = pre.querySelector("code") ?? pre; e; e = e.parentElement) {
-              const color = getComputedStyle(e).backgroundColor;
-              if ((channels(color)[3] ?? 1) > 0) { background = color; break; }
+              const color = rgba(getComputedStyle(e).backgroundColor);
+              if (color[3] > 0) layers.push(color);
+              if (color[3] >= 1) break;
             }
-            background ??= "rgb(255, 255, 255)";
+            if (!layers.length || layers[layers.length - 1][3] < 1) {
+              const canvas = document.createElement("div");
+              canvas.style.backgroundColor = "Canvas";
+              document.documentElement.append(canvas);
+              layers.push(rgba(getComputedStyle(canvas).backgroundColor));
+              canvas.remove();
+            }
+            let background = layers[layers.length - 1].slice(0, 3);
+            for (let i = layers.length - 2; i >= 0; i--) {
+              const [r, g, b, a] = layers[i];
+              background = [r * a + background[0] * (1 - a), g * a + background[1] * (1 - a), b * a + background[2] * (1 - a)];
+            }
             let tokenColor = null;
             const walker = document.createTreeWalker(pre, NodeFilter.SHOW_TEXT);
             for (let node = walker.nextNode(); node; node = walker.nextNode()) {
@@ -112,7 +127,7 @@ struct HighlightingTests {
               }
             }
             const plain = getComputedStyle(pre.querySelector("code") ?? pre).color;
-            const [a, b] = [luminance(tokenColor ?? plain), luminance(background)].sort((x, y) => y - x);
+            const [a, b] = [luminance(rgba(tokenColor ?? plain)), luminance(background)].sort((x, y) => y - x);
             return { text: pre.textContent.replace(/\\n$/, ""), token: tokenColor, plain,
                      contrast: (a + 0.05) / (b + 0.05) };
             """, ["token": token])
