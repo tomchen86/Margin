@@ -19,6 +19,7 @@
     const template = document.createElement("template");
     template.innerHTML = md.render(body);
     removeWhatThePolicyCannotStop(template.content);
+    addHeadingAnchors(template.content);
     if (frontMatter !== null) template.content.prepend(preformatted(frontMatter, "front-matter"));
     article.replaceChildren(template.content);
   } catch (error) {
@@ -74,6 +75,31 @@
       inline.children.unshift(box);
       tokens[index - 2].attrJoin("class", "task-list-item");
     }
+  }
+
+  // Every heading gets GitHub's id for its text, so links written for GitHub find it. A heading
+  // whose own HTML has an id keeps it, and a repeat of any id in the document is numbered.
+  function addHeadingAnchors(root) {
+    const used = new Set([...root.querySelectorAll("[id]")].map((element) => element.id));
+    const repeats = new Map();
+    for (const heading of root.querySelectorAll("h1, h2, h3, h4, h5, h6")) {
+      if (heading.id) continue;
+      const base = gitHubSlug(heading.textContent);
+      let id = base;
+      while (used.has(id)) {
+        const count = (repeats.get(base) ?? 0) + 1;
+        repeats.set(base, count);
+        id = `${base}-${count}`;
+      }
+      used.add(id);
+      heading.id = id;
+    }
+  }
+
+  // Lowercase; letters, marks, numbers, "_", "-", and spaces kept, everything else dropped; each
+  // space a "-".
+  function gitHubSlug(text) {
+    return text.trim().toLowerCase().replace(/[^\p{L}\p{M}\p{N}\p{Pc} -]/gu, "").replace(/ /g, "-");
   }
 
   // WebKit doesn't apply the policy's frame-src to srcdoc frames, and a <meta> or <base> added
