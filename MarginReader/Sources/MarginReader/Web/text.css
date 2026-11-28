@@ -1,5 +1,10 @@
-/* A document shown as its text: monospaced, every space kept, long lines wrapped, in a column of
-   at most 80 characters centered on the page. */
+/* A document shown as its text: monospaced at the owner's text size (Dynamic Type), every space
+   kept, long lines wrapped, in a column of at most 80 characters centered on the page, in the
+   system's light or dark colors. */
+
+:root {
+    color-scheme: light dark;
+}
 
 html {
     -webkit-text-size-adjust: 100%;
@@ -8,13 +13,15 @@ html {
 body {
     margin: 0;
     padding: 16px 20px 32px;
+    /* The system's body text style, which follows the owner's text size. */
+    font: -apple-system-body;
 }
 
 pre.text {
     margin: 0 auto;
     max-width: 80ch;
     font-family: ui-monospace, monospace;
-    font-size: 15px;
+    font-size: 1em;
     line-height: 1.45;
     white-space: pre-wrap;
     overflow-wrap: anywhere;

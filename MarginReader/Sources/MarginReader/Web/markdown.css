@@ -1,6 +1,22 @@
-/* A Markdown document: the system font, in a column 42 times the text size wide, centered on the
-   page. Tables and code blocks wider than the column scroll sideways inside themselves; the page
-   never does. Images shrink to the column. */
+/* A Markdown document: the system font at the owner's text size (Dynamic Type), in a column 42
+   times the text size wide, centered on the page, in the system's light or dark colors. Tables and
+   code blocks wider than the column scroll sideways inside themselves; the page never does. Images
+   shrink to the column. */
+
+:root {
+    color-scheme: light dark;
+    --secondary-label: rgba(60, 60, 67, 0.6);
+    --separator: rgba(60, 60, 67, 0.29);
+    --fill: rgba(118, 118, 128, 0.12);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --secondary-label: rgba(235, 235, 245, 0.6);
+        --separator: rgba(84, 84, 88, 0.65);
+        --fill: rgba(118, 118, 128, 0.24);
+    }
+}
 
 html {
     -webkit-text-size-adjust: 100%;
@@ -9,8 +25,9 @@ html {
 body {
     margin: 0;
     padding: 16px 20px 32px;
+    /* The system's body text style, which follows the owner's text size, in the system font. */
+    font: -apple-system-body;
     font-family: system-ui, -apple-system, sans-serif;
-    font-size: 17px;
     line-height: 1.5;
 }
 
@@ -37,20 +54,20 @@ pre {
     overflow-wrap: normal;
     padding: 0.75em 1em;
     border-radius: 6px;
-    background: rgba(118, 118, 128, 0.12);
+    background: var(--fill);
 }
 
 kbd {
     padding: 0.1em 0.35em;
-    border: 1px solid rgba(60, 60, 67, 0.29);
+    border: 1px solid var(--separator);
     border-radius: 4px;
 }
 
 blockquote {
     margin: 0 0 1em;
     padding-left: 1em;
-    border-left: 3px solid rgba(60, 60, 67, 0.29);
-    color: rgba(60, 60, 67, 0.75);
+    border-left: 3px solid var(--separator);
+    color: var(--secondary-label);
 }
 
 table {
@@ -63,7 +80,7 @@ table {
 th,
 td {
     padding: 0.35em 0.7em;
-    border: 1px solid rgba(60, 60, 67, 0.29);
+    border: 1px solid var(--separator);
     overflow-wrap: normal;
 }
 
@@ -79,7 +96,7 @@ iframe {
 
 hr {
     border: none;
-    border-top: 1px solid rgba(60, 60, 67, 0.29);
+    border-top: 1px solid var(--separator);
 }
 
 li.task-list-item {
@@ -92,4 +109,11 @@ li.task-list-item input[type="checkbox"] {
 
 .footnotes {
     font-size: 0.88em;
+}
+
+/* A display formula wider than the column scrolls sideways inside itself. */
+.katex-display {
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 0.25em 0;
 }

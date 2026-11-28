@@ -1,17 +1,17 @@
 import Foundation
 
 /// The page that shows a Markdown document: the source embedded as a JSON string, rendered in the
-/// page by the bundled markdown-it and `render.js` (ADR-0002).
+/// page by the bundled markdown-it, KaTeX for math, and `render.js` (ADR-0002).
 enum MarkdownPage {
     /// Only the app's own scripts, styles, and fonts load; a document's scripts, event handlers,
-    /// `javascript:` links, objects, and frames other than `https:` don't. Web images and media
-    /// load as in a browser. `style` attributes and `<style>` elements apply.
+    /// `javascript:` links, objects, and frames other than `https:` don't. Images next to the
+    /// document load through `margin://file/`; web images and media load as in a browser. `style` attributes and `<style>` elements apply.
     static let contentSecurityPolicy = [
         "default-src 'none'",
         "script-src \(ReaderScheme.appURL(""))",
         "style-src \(ReaderScheme.appURL("")) 'unsafe-inline'",
         "font-src \(ReaderScheme.appURL(""))",
-        "img-src https: http: data:",
+        "img-src \(ReaderScheme.fileURL) https: http: data:",
         "media-src https: http:",
         "frame-src https:",
         "base-uri 'none'",
@@ -27,12 +27,14 @@ enum MarkdownPage {
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta http-equiv="Content-Security-Policy" content="\(contentSecurityPolicy)">
         <title>\(TextPage.escaped(title))</title>
+        <link rel="stylesheet" href="\(ReaderScheme.appURL("katex.min.css"))">
         <link rel="stylesheet" href="\(ReaderScheme.appURL("markdown.css"))">
         </head>
         <body><article></article>
         <script type="application/json" id="source">\(jsonString(markdown))</script>
         <script src="\(ReaderScheme.appURL("markdown-it.min.js"))"></script>
         <script src="\(ReaderScheme.appURL("markdown-it-footnote.min.js"))"></script>
+        <script src="\(ReaderScheme.appURL("katex.min.js"))"></script>
         <script src="\(ReaderScheme.appURL("render.js"))"></script>
         </body>
         </html>

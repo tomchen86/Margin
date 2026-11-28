@@ -501,7 +501,7 @@ struct MarkdownTests {
                 running: "fetch('https://margin.invalid/data').catch(() => {});", under: "connect-src"))
     }
 
-    @Test("[MARKDOWN-14.1] applies the document's own style elements and attributes, not stylesheets from the web")
+    @Test("[MARKDOWN-14.2] applies the document's own style elements and attributes, not stylesheets from the web")
     func appliesTheDocumentsOwnStyles() async throws {
         let markdown = """
             <style>.note { color: rgb(0, 128, 0); } table { font-size: 12px; }</style>
@@ -533,6 +533,27 @@ struct MarkdownTests {
         #expect(page.red == "rgb(255, 0, 0)", "a style attribute applies")
         #expect(
             try await shown.policyRefuses("link", ["rel": "stylesheet", "href": "https://margin.invalid/theme.css"]))
+    }
+
+    @Test("[MARKDOWN-14.2] loads no stylesheet from a file next to the document")
+    func loadsNoNeighbouringStylesheet() async throws {
+        let markdown = """
+            <link rel="stylesheet" href="style.css">
+
+            <p class="local">Local paragraph.</p>
+            """
+        let shown = try await ShownDocument.show(
+            files: ["Styled.md": Data(markdown.utf8), "style.css": Data(".local { color: rgb(0, 0, 255); }".utf8)],
+            opening: "Styled.md")
+        defer { shown.close() }
+        try await shown.settle()
+        let color = try await shown.evaluate(
+            "const p = document.querySelector('p.local'); return p ? getComputedStyle(p).color : null")
+        #expect(color as? String != nil, "the reader renders the document")
+        #expect(color as? String != "rgb(0, 0, 255)", "style.css does not apply")
+        let sibling = try #require(
+            try await shown.evaluate("return new URL('style.css', location.href).href") as? String)
+        #expect(try await shown.policyRefuses("link", ["rel": "stylesheet", "href": sibling]), "the page refuses it")
     }
 
     @Test("[MARKDOWN-15.1] stays on the document despite its meta refresh and base address")
